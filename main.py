@@ -1,52 +1,75 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
+from websocket_manager import WebSocketManager
+from openai import OpenAI
+from fastapi.middleware.cors import CORSMiddleware
+from openai import AsyncOpenAI
+import time
+from typing import AsyncGenerator, NoReturn
+
 
 app = FastAPI()
+client = AsyncOpenAI()
 
-html = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <h1>WebSocket Chat</h1>
-        <form action="" onsubmit="sendMessage(event)">
-            <input type="text" id="messageText" autocomplete="off"/>
-            <button>Send</button>
-        </form>
-        <ul id='messages'>
-        </ul>
-        <script>
-            var ws = new WebSocket("ws://localhost:8000/ws");
-            ws.onmessage = function(event) {
-                var messages = document.getElementById('messages')
-                var message = document.createElement('li')
-                var content = document.createTextNode(event.data)
-                message.appendChild(content)
-                messages.appendChild(message)
-            };
-            function sendMessage(event) {
-                var input = document.getElementById("messageText")
-                ws.send(input.value)
-                input.value = ''
-                event.preventDefault()
-            }
-        </script>
-    </body>
-</html>
-"""
+# with open("index.html") as f:
+#     html = f.read()
+
+
+async def get_ai_response(message: str) -> AsyncGenerator[str, None]:
+    """
+    OpenAI Response
+    """
+    response = await client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a helpful assistant, skilled in explaining "
+                    "complex concepts in simple terms."
+                ),
+            },
+            {
+                "role": "user",
+                "content": message,
+            },
+        ],
+        stream=True,
+    )
+
+    all_content = ""
+    async for chunk in response:
+        content = chunk.choices[0].delta.content
+        if content:
+            all_content += content
+            yield content
 
 
 @app.get("/")
-async def get():
+async def web_app() -> HTMLResponse:
+    """
+    Web App
+    """
     return HTMLResponse(html)
 
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
+    """
+    Websocket for AI responses
+    """
     await websocket.accept()
     while True:
-        data = await websocket.receive_text()
-        print(data)
-        await websocket.send_text(f"gg Message text was: {data}")
+        message = await websocket.receive_text()
+        async for text in get_ai_response(message):
+            await websocket.send_text(text)
+
+
+# if __name__ == "__main__":
+#     uvicorn.run(
+#         "main:app",
+#         host="0.0.0.0",
+#         port=8000,
+#         log_level="debug",
+#         reload=True,
+#     )
