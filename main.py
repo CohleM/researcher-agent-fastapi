@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import AsyncOpenAI
 import time
 from typing import AsyncGenerator, NoReturn
+from websocket_manager import WebSocketManager
 
+manager = WebSocketManager()
 
 app = FastAPI()
 client = AsyncOpenAI()
@@ -40,17 +42,22 @@ async def get_ai_response(message: str) -> AsyncGenerator[str, None]:
     all_content = ""
     async for chunk in response:
         content = chunk.choices[0].delta.content
+        finish_reason = chunk.choices[0].finish_reason
+        # print("haha", content)
+        # if content:
+        # all_content += content
         if content:
             all_content += content
-            yield content
+
+        yield all_content, finish_reason
 
 
-@app.get("/")
-async def web_app() -> HTMLResponse:
-    """
-    Web App
-    """
-    return HTMLResponse(html)
+# @app.get("/")
+# async def web_app() -> HTMLResponse:
+#     """
+#     Web App
+#     """
+#     return HTMLResponse(html)
 
 
 @app.websocket("/ws")
@@ -58,11 +65,15 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
     """
     Websocket for AI responses
     """
-    await websocket.accept()
+
+    await manager.connect(websocket)
+
     while True:
         message = await websocket.receive_text()
-        async for text in get_ai_response(message):
-            await websocket.send_text(text)
+        print("message printing from backend", message)
+        async for text, finish_reason in get_ai_response(message):
+            # print(text, finish_reason)
+            await websocket.send_json({"content": text, "finish_reason": finish_reason})
 
 
 # if __name__ == "__main__":
