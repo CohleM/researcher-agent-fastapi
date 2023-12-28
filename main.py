@@ -53,10 +53,11 @@ def create_magic_link_token(data: dict):
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 
+@app.get("/token/{token}")
 def verify_magic_link_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        return {"payload": payload, "message": "successfully loggedIn"}
     except JWTError:
         return None
 
@@ -70,10 +71,9 @@ def send_magic_link(user: User):
     send_email(
         user.email,
         "Log into OkProfessor",
-        f"Click on this link to authenticate: {token}",
+        f"Click on this link to authenticate: http://127.0.0.1:8000/token/{token}",
     )
-
-    return {"message": "Magic link sent"}
+    return {"message": f"Magic link sent to your {user.email}"}
 
 
 def send_email(to_email: str, subject: str, text_content: str):
@@ -95,11 +95,11 @@ def send_email(to_email: str, subject: str, text_content: str):
     print(response.text)
 
 
-send_email(
-    to_email="manish981194@gmail.com",
-    subject="Is Python SDK work done?",
-    text_content="Hi Sourabh,\nIs Python SDK work complete or not?",
-)
+# send_email(
+#     to_email="manish981194@gmail.com",
+#     subject="Is Python SDK work done?",
+#     text_content="Hi Sourabh,\nIs Python SDK work complete or not?",
+# )
 
 
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
