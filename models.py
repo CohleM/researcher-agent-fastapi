@@ -12,7 +12,7 @@ class User(Base):
     # hashed_password = Column(String)
     # is_active = Column(Boolean, default=True)
 
-    drafts = relationship("Drafts", back_populates="owner")
+    drafts = relationship("Draft", back_populates="owner")
 
 
 class Draft(Base):
@@ -23,7 +23,7 @@ class Draft(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="drafts")
 
-    files = relationship("File", back_populates="correspondin_draft")
+    files = relationship("File", back_populates="corresponding_draft")
     # add another relationship
 
 

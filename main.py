@@ -30,6 +30,9 @@ from . import crud, models, schemas
 
 from .database import SessionLocal, engine
 
+from .routers import users
+
+
 models.Base.metadata.create_all(bind=engine)
 
 
@@ -38,75 +41,77 @@ manager = WebSocketManager()
 app = FastAPI()
 client = AsyncOpenAI()
 
+
+app.include_router(users.router)
 # with open("index.html") as f:
 #     html = f.read()
 
 
-# to get a string like this run:
-# openssl rand -hex 32
-SECRET_KEY = "your-secret-key"  # Change this to a secure random key
-ALGORITHM = "HS256"
+# # to get a string like this run:
+# # openssl rand -hex 32
+# SECRET_KEY = "your-secret-key"  # Change this to a secure random key
+# ALGORITHM = "HS256"
 
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "iamafanaticus@gmail.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
+# fake_users_db = {
+#     "johndoe": {
+#         "username": "johndoe",
+#         "full_name": "John Doe",
+#         "email": "iamafanaticus@gmail.com",
+#         "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+#         "disabled": False,
+#     }
+# }
 
 
-class User(BaseModel):
-    email: str
+# class User(BaseModel):
+#     email: str
 
 
-def create_magic_link_token(data: dict):
-    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+# def create_magic_link_token(data: dict):
+#     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 
-@app.get("/token/{token}")
-def verify_magic_link_token(token: str):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return {"payload": payload, "message": "successfully loggedIn"}
-    except JWTError:
-        return {"payload": "not-found"}
+# @app.get("/token/{token}")
+# def verify_magic_link_token(token: str):
+#     try:
+#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         return {"payload": payload, "message": "successfully loggedIn"}
+#     except JWTError:
+#         return {"payload": "not-found"}
 
 
-@app.post("/magic-link/")
-def send_magic_link(user: User):
-    # Generate a unique token
-    token = create_magic_link_token({"sub": user.email})
+# @app.post("/magic-link/")
+# def send_magic_link(user: User):
+#     # Generate a unique token
+#     token = create_magic_link_token({"sub": user.email})
 
-    # Send the token via email (replace with your email sending logic)
-    send_email(
-        user.email,
-        "Log into OkProfessor",
-        f"Click on this link to authenticate: http://127.0.0.1:8000/token/{token}",
-    )
-    return {"message": f"Magic link sent to your {user.email}"}
+#     # Send the token via email (replace with your email sending logic)
+#     send_email(
+#         user.email,
+#         "Log into OkProfessor",
+#         f"Click on this link to authenticate: http://127.0.0.1:8000/token/{token}",
+#     )
+#     return {"message": f"Magic link sent to your {user.email}"}
 
 
-def send_email(to_email: str, subject: str, text_content: str):
-    url = "https://api.brevo.com/v3/smtp/email"
-    payload = json.dumps(
-        {
-            "sender": {"name": "Manish", "email": "manisrocker@gmail.com"},
-            "to": [{"email": f"{to_email}"}],
-            "subject": subject,
-            "textContent": text_content,
-        }
-    )
-    headers = {
-        "accept": "application/json",
-        "api-key": "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",
-        "content-type": "application/json",
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+# def send_email(to_email: str, subject: str, text_content: str):
+#     url = "https://api.brevo.com/v3/smtp/email"
+#     payload = json.dumps(
+#         {
+#             "sender": {"name": "Manish", "email": "manisrocker@gmail.com"},
+#             "to": [{"email": f"{to_email}"}],
+#             "subject": subject,
+#             "textContent": text_content,
+#         }
+#     )
+#     headers = {
+#         "accept": "application/json",
+#         "api-key": "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",
+#         "content-type": "application/json",
+#     }
+#     response = requests.request("POST", url, headers=headers, data=payload)
+#     print(response.text)
 
 
 ## Websocket connection and streaming openai response
@@ -169,45 +174,45 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
             await websocket.send_json({"content": text, "finish_reason": finish_reason})
 
 
-### testing database
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# ### testing database
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
 
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
+# @app.post("/users/", response_model=schemas.User)
+# def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+#     db_user = crud.get_user_by_email(db, email=user.email)
+#     if db_user:
+#         raise HTTPException(status_code=400, detail="Email already registered")
+#     return crud.create_user(db=db, user=user)
 
 
-@app.get("/users/", response_model=list[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
-    return users
+# @app.get("/users/", response_model=list[schemas.User])
+# def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     users = crud.get_users(db, skip=skip, limit=limit)
+#     return users
 
 
-@app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+# @app.get("/users/{user_id}", response_model=schemas.User)
+# def read_user(user_id: int, db: Session = Depends(get_db)):
+#     db_user = crud.get_user(db, user_id=user_id)
+#     if db_user is None:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return db_user
 
 
-@app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
-):
-    return crud.create_user_item(db=db, item=item, user_id=user_id)
+# @app.post("/users/{user_id}/items/", response_model=schemas.Item)
+# def create_item_for_user(
+#     user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+# ):
+#     return crud.create_user_item(db=db, item=item, user_id=user_id)
 
 
-@app.get("/items/", response_model=list[schemas.Item])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db, skip=skip, limit=limit)
-    return items
+# @app.get("/items/", response_model=list[schemas.Item])
+# def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     items = crud.get_items(db, skip=skip, limit=limit)
+#     return items

@@ -49,7 +49,7 @@ class UserBase(BaseModel):
 
 class User(UserBase):
     id: int
-    items: list[Draft] = []
+    drafts: list[Draft] = []
 
     class Config:
         orm_mode = True
