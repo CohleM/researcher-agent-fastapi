@@ -1,8 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from jose import JWTError, jwt
 import json
 import requests
 from .. import schemas
+
 
 router = APIRouter()
 
@@ -32,10 +33,16 @@ def create_magic_link_token(data: dict):
 def verify_magic_link_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return {"payload": payload, "message": "successfully loggedIn"}
+        email: str = payload.get("sub")
 
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        # Perform additional user verification or authentication here
+        # Example: authenticate_user(email)
+        return {"isValid": "true", "message": "Magic link verified successfully"}
     except JWTError:
-        return {"payload": "not-found"}
+        return {"isValid": "false", "message": "Invalid token"}
+        # raise HTTPException(status_code=401, detail="Invalid token")
 
 
 @router.post("/magic-link")
@@ -47,7 +54,7 @@ def send_magic_link(user: schemas.UserBase):
     send_email(
         user.email,
         "Log into OkProfessor",
-        f"Click on this link to authenticate: http://127.0.0.1:8000/token/{token}",
+        f"Click on this link to authenticate: http://localhost:3000/authentication?token={token}",
     )
     return {"message": f"Magic link sent to your {user.email}"}
 
@@ -64,7 +71,7 @@ def send_email(to_email: str, subject: str, text_content: str):
     )
     headers = {
         "accept": "application/json",
-        "api-key": "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",
+        "api-key": "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",
         "content-type": "application/json",
     }
     response = requests.request("POST", url, headers=headers, data=payload)
