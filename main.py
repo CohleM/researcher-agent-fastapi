@@ -15,7 +15,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
+
 from passlib.context import CryptContext
 from pydantic import BaseModel
 import requests
@@ -24,13 +24,15 @@ import json
 
 ##db
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
 
 from .database import SessionLocal, engine
 
-from .routers import users
+from .routers import users, authentication
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -43,6 +45,23 @@ client = AsyncOpenAI()
 
 
 app.include_router(users.router)
+app.include_router(authentication.router)
+
+
+# Add this before defining your FastAPI app
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+# Add this to your FastAPI app
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # with open("index.html") as f:
 #     html = f.read()
 
@@ -77,6 +96,7 @@ app.include_router(users.router)
 #     try:
 #         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 #         return {"payload": payload, "message": "successfully loggedIn"}
+
 #     except JWTError:
 #         return {"payload": "not-found"}
 

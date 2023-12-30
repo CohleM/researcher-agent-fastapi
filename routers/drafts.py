@@ -19,9 +19,6 @@ def get_db():
         db.close()
 
 
-@router.post("/create-user", response_model=schemas.User, tags=["user"])
-def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        return db_user
-    return crud.create_user(db=db, user=user)
+@router.post("/create-draft")
+def create_draft():
+    pass
