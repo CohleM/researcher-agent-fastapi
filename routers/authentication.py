@@ -23,15 +23,10 @@ SECRET_KEY = "your-secret-key"  # Change this to a secure random key
 ALGORITHM = "HS256"
 
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "iamafanaticus@gmail.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
+# Replace "authorization-code" and "token" with your actual endpoint URLs
+oauth2_scheme = OAuth2AuthorizationCodeBearer(
+    authorizationUrl="authorization-code", tokenUrl="token"
+)
 
 
 # Dependency
@@ -79,7 +74,7 @@ def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
         user = create_user(schemas.UserBase(email=email), db)
         # return {"isValid": "true", "message": "Magic link verified successfully"}
         access_token = create_token(
-            {"sub": user.email}, expires_delta=timedelta(minutes=5)
+            {"sub": user.email}, expires_delta=timedelta(minutes=25)
         )
         return {"access_token": access_token, "token_type": "bearer"}
 
@@ -123,35 +118,35 @@ def send_email(to_email: str, subject: str, text_content: str):
     print(response.text)
 
 
-# async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         username: str = payload.get("sub")
-#         if username is None:
-#             raise credentials_exception
-#         token_data = TokenData(username=username)
-#     except JWTError:
-#         raise credentials_exception
-#     user = get_user(fake_users_db, username=token_data.username)
-#     if user is None:
-#         raise credentials_exception
-#     return user
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+
+    except JWTError:
+        raise credentials_exception
+
+    # user = get_user(fake_users_db, username=token_data.username)
+    user = crud.get_user_by_email(db=db, email=email)
+    if user is None:
+        raise credentials_exception
+    return user
 
 
-# Replace "authorization-code" and "token" with your actual endpoint URLs
-oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    authorizationUrl="authorization-code", tokenUrl="token"
-)
-
-
-@router.get("/private-data")
-async def get_private_data(token: str = Depends(oauth2_scheme)):
+@router.get("/private-data", response_model=schemas.User)
+async def get_private_data(
+    current_user: Annotated[schemas.User, Depends(get_current_user)]
+):
     # The `token` parameter will contain the extracted bearer token
     # You can use this token for authentication and authorization logic
-    print(token)
-    return {"token": token}
+    print(current_user)
+    return current_user
