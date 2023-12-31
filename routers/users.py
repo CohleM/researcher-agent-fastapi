@@ -2,6 +2,8 @@ from fastapi import APIRouter
 from .. import schemas, crud, models
 
 from fastapi import Depends, FastAPI, HTTPException
+from typing import Annotated
+
 from sqlalchemy.orm import Session
 
 # from . import crud, models, schemas

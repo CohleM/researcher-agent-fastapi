@@ -4,11 +4,14 @@ import json
 import requests
 from .. import schemas, crud
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Annotated
 from ..database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import os
+from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2AuthorizationCodeBearer
+
 
 router = APIRouter()
 
@@ -63,7 +66,7 @@ def create_token(data: dict, expires_delta: Optional[timedelta] = None):
 def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="Could not validate credentials gg",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
@@ -79,7 +82,9 @@ def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
             {"sub": user.email}, expires_delta=timedelta(minutes=5)
         )
         return {"access_token": access_token, "token_type": "bearer"}
-    except JWTError:
+
+    except Exception as e:
+        print("there was some errorr ggg")
         raise credentials_exception
 
     # raise HTTPException(status_code=401, detail="Invalid token")
@@ -116,3 +121,37 @@ def send_email(to_email: str, subject: str, text_content: str):
     }
     response = requests.request("POST", url, headers=headers, data=payload)
     print(response.text)
+
+
+# async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Could not validate credentials",
+#         headers={"WWW-Authenticate": "Bearer"},
+#     )
+#     try:
+#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         username: str = payload.get("sub")
+#         if username is None:
+#             raise credentials_exception
+#         token_data = TokenData(username=username)
+#     except JWTError:
+#         raise credentials_exception
+#     user = get_user(fake_users_db, username=token_data.username)
+#     if user is None:
+#         raise credentials_exception
+#     return user
+
+
+# Replace "authorization-code" and "token" with your actual endpoint URLs
+oauth2_scheme = OAuth2AuthorizationCodeBearer(
+    authorizationUrl="authorization-code", tokenUrl="token"
+)
+
+
+@router.get("/private-data")
+async def get_private_data(token: str = Depends(oauth2_scheme)):
+    # The `token` parameter will contain the extracted bearer token
+    # You can use this token for authentication and authorization logic
+    print(token)
+    return {"token": token}

@@ -19,6 +19,6 @@ def get_db():
         db.close()
 
 
-@router.post("/create-draft")
-def create_draft():
-    pass
+# @router.post("/create-draft", response_model= schemas.Draft)
+# def create_draft(draft: schemas.DraftBase, db: Session = Depends(get_db), current_user: Annotated[User, Depends(get_current_active_user)] ):
+#     pass

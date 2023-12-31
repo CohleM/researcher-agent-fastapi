@@ -18,7 +18,8 @@ class User(Base):
 class Draft(Base):
     __tablename__ = "drafts"
     id = Column(Integer, primary_key=True, index=True)
-    # change the string to text or something later
+    name = Column(String, index=True)
+
     text = Column(Text)
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="drafts")
