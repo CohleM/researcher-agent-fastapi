@@ -43,3 +43,21 @@ def create_new_draft(
     draft = crud.get_draft_by_id(db, id)
 
     return draft
+
+
+@router.post("/edit-draft/{draft_id}", response_model=schemas.Draft)
+def edit_draft(
+    draft_id: int,
+    draft_update: schemas.DraftBase,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    draft = crud.get_draft_by_id(db, draft_id)
+
+    if draft:
+        draft.text = draft_update.text
+        db.commit()
+        db.refresh(draft)
+        return draft
+
+    raise HTTPException(status_code=404, detail="could not find the draft with that id")
