@@ -32,6 +32,7 @@ def get_items(db: Session, skip: int = 0, limit: int = 100):
 
 ## Drafts
 def create_draft(db: Session, user: schemas.User):
+    print("hehe")
     # Initially we don't have anything on the draft so text = ''
     text = ""
     db_draft = models.Draft(text=text, name=text[:25] + "..", owner_id=user.id)

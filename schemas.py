@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from datetime import datetime
 
 # class ItemBase(BaseModel):
 #     title: str
@@ -39,7 +39,7 @@ class Draft(DraftBase):
     name: str
     owner_id: int
     files: list[File] = []
-    last_updated: str
+    last_updated: datetime
 
     class Config:
         orm_mode = True

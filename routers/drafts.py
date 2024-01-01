@@ -21,12 +21,12 @@ def get_db():
         db.close()
 
 
-@router.post("/create-draft", response_model=schemas.Draft)
-def create_draft(
-    draft: schemas.DraftBase,
+@router.get("/create-draft", response_model=schemas.Draft)
+def create_new_draft(
     current_user: Annotated[schemas.User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    draft = create_draft(db, current_user)
+    print("yas", current_user)
+    draft = crud.create_draft(db, current_user)
 
     return draft
