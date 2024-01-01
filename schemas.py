@@ -32,6 +32,7 @@ class File(FileBase):
 
 class DraftBase(BaseModel):
     text: str
+    name: str
 
 
 class DraftWithoutText(BaseModel):
@@ -46,7 +47,7 @@ class DraftWithoutText(BaseModel):
 
 class Draft(DraftBase):
     id: int
-    name: str
+
     owner_id: int
     files: list[File] = []
     last_updated: datetime

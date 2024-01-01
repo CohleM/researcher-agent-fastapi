@@ -56,6 +56,7 @@ def edit_draft(
 
     if draft:
         draft.text = draft_update.text
+        draft.name = draft_update.name
         db.commit()
         db.refresh(draft)
         return draft
