@@ -74,7 +74,7 @@ def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
         user = create_user(schemas.UserBase(email=email), db)
         # return {"isValid": "true", "message": "Magic link verified successfully"}
         access_token = create_token(
-            {"sub": user.email}, expires_delta=timedelta(minutes=25)
+            {"sub": user.email}, expires_delta=timedelta(hours=4)
         )
         return {"access_token": access_token, "token_type": "bearer"}
 
@@ -142,11 +142,9 @@ async def get_current_user(
     return user
 
 
-@router.get("/private-data", response_model=schemas.User)
+@router.get("/userinfo", response_model=schemas.UserResponse)
 async def get_private_data(
-    current_user: Annotated[schemas.User, Depends(get_current_user)]
+    current_user: Annotated[schemas.UserResponse, Depends(get_current_user)]
 ):
-    # The `token` parameter will contain the extracted bearer token
-    # You can use this token for authentication and authorization logic
     print(current_user)
     return current_user

@@ -49,6 +49,13 @@ class UserBase(BaseModel):
     email: str
 
 
+class UserResponse(UserBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
 class User(UserBase):
     id: int
     drafts: list[Draft] = []

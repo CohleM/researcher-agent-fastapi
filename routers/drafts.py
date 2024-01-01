@@ -21,6 +21,7 @@ def get_db():
         db.close()
 
 
+# Create a new draft for new users.
 @router.get("/create-draft", response_model=schemas.Draft)
 def create_new_draft(
     current_user: Annotated[schemas.User, Depends(get_current_user)],
