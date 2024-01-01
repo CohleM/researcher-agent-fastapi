@@ -34,6 +34,16 @@ class DraftBase(BaseModel):
     text: str
 
 
+class DraftWithoutText(BaseModel):
+    id: int
+    name: str
+    owner_id: int
+    last_updated: datetime
+
+    class Config:
+        orm_mode = True
+
+
 class Draft(DraftBase):
     id: int
     name: str
@@ -58,7 +68,7 @@ class UserResponse(UserBase):
 
 class User(UserBase):
     id: int
-    drafts: list[Draft] = []
+    drafts: list[DraftWithoutText] = []
 
     class Config:
         orm_mode = True

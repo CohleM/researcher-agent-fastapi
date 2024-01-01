@@ -142,7 +142,7 @@ async def get_current_user(
     return user
 
 
-@router.get("/userinfo", response_model=schemas.UserResponse)
+@router.get("/userinfo", response_model=schemas.User)
 async def get_private_data(
     current_user: Annotated[schemas.UserResponse, Depends(get_current_user)]
 ):
