@@ -36,8 +36,10 @@ class DraftBase(BaseModel):
 
 class Draft(DraftBase):
     id: int
+    name: str
     owner_id: int
     files: list[File] = []
+    last_updated: str
 
     class Config:
         orm_mode = True

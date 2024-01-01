@@ -32,7 +32,7 @@ from . import crud, models, schemas
 
 from .database import SessionLocal, engine
 
-from .routers import users, authentication
+from .routers import users, authentication, drafts
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -46,6 +46,7 @@ client = AsyncOpenAI()
 
 app.include_router(users.router)
 app.include_router(authentication.router)
+app.include_router(drafts.router)
 
 
 # Add this before defining your FastAPI app

@@ -31,10 +31,10 @@ def get_items(db: Session, skip: int = 0, limit: int = 100):
 
 
 ## Drafts
-def create_draft(db: Session, draft: schemas.DraftBase, user: schemas.UserBase):
-    db_draft = models.Draft(
-        text=draft.text, name=draft.text[:25] + "..", owner_id=user.id
-    )
+def create_draft(db: Session, user: schemas.User):
+    # Initially we don't have anything on the draft so text = ''
+    text = ""
+    db_draft = models.Draft(text=text, name=text[:25] + "..", owner_id=user.id)
     db.add(db_draft)
     db.commit()
     db.refresh(db_draft)
