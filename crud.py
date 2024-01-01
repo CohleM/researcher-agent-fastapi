@@ -42,6 +42,10 @@ def create_draft(db: Session, user: schemas.User):
     return db_draft
 
 
+def get_draft_by_id(db: Session, id: int):
+    return db.query(models.Draft).filter(models.Draft.id == id).first()
+
+
 # def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
 #     db_item = models.Item(**item.dict(), owner_id=user_id)
 #     db.add(db_item)
