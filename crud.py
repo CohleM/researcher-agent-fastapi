@@ -35,7 +35,7 @@ def create_draft(db: Session, user: schemas.User):
     print("hehe")
     # Initially we don't have anything on the draft so text = ''
     text = ""
-    db_draft = models.Draft(text=text, name=text[:25], owner_id=user.id)
+    db_draft = models.Draft(text=text, name="", owner_id=user.id)
     db.add(db_draft)
     db.commit()
     db.refresh(db_draft)

@@ -27,14 +27,13 @@ def create_new_draft(
     current_user: Annotated[schemas.User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    print("yas", current_user)
+    print("create-new-draft", current_user)
     draft = crud.create_draft(db, current_user)
-
     return draft
 
 
 @router.get("/draft", response_model=schemas.Draft)
-def create_new_draft(
+def get_draft(
     id: int,
     current_user: Annotated[schemas.User, Depends(get_current_user)],
     db: Session = Depends(get_db),
