@@ -61,3 +61,12 @@ def edit_draft(
         return draft
 
     raise HTTPException(status_code=404, detail="could not find the draft with that id")
+
+
+@router.get("/get-drafts", response_model=schemas.AllDrafts)
+def get_drafts(
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    print(current_user.drafts)
+    return current_user.drafts

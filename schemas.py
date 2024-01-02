@@ -45,6 +45,10 @@ class DraftWithoutText(BaseModel):
         orm_mode = True
 
 
+class AllDrafts(BaseModel):
+    drafts: list[DraftWithoutText] = []
+
+
 class Draft(DraftBase):
     id: int
 
