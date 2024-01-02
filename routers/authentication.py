@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from jose import JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 import json
 import requests
 from .. import schemas, crud
@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2AuthorizationCodeBearer
 
 
-router = APIRouter()
+router = APIRouter(tags=["auth"])
 
 load_dotenv()
 
@@ -74,7 +74,7 @@ def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
         user = create_user(schemas.UserBase(email=email), db)
         # return {"isValid": "true", "message": "Magic link verified successfully"}
         access_token = create_token(
-            {"sub": user.email}, expires_delta=timedelta(hours=4)
+            {"sub": user.email}, expires_delta=timedelta(minutes=2)
         )
         return {"access_token": access_token, "token_type": "bearer"}
 
@@ -132,12 +132,21 @@ async def get_current_user(
         if email is None:
             raise credentials_exception
 
+    except ExpiredSignatureError:
+        print("yess")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     except JWTError:
         raise credentials_exception
 
     # user = get_user(fake_users_db, username=token_data.username)
     user = crud.get_user_by_email(db=db, email=email)
     if user is None:
+        print("this time its me")
         raise credentials_exception
     return user
 
@@ -146,5 +155,15 @@ async def get_current_user(
 async def get_user_info(
     current_user: Annotated[schemas.UserResponse, Depends(get_current_user)]
 ):
-    print(current_user)
-    return current_user
+    print("yooo")
+    if current_user:
+        print(current_user)
+        return current_user
+
+    else:
+        print("heheh")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )

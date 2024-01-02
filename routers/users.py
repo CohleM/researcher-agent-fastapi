@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 # from . import crud, models, schemas
 from ..database import SessionLocal, engine
 
-router = APIRouter()
+router = APIRouter(tags=["user"])
 
 
 # Dependency

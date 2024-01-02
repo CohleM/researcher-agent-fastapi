@@ -179,20 +179,20 @@ async def get_ai_response(message: str) -> AsyncGenerator[str, None]:
 #     return HTMLResponse(html)
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
-    """
-    Websocket for AI responses
-    """
+# @app.websocket("/ws")
+# async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
+#     """
+#     Websocket for AI responses
+#     """
 
-    await manager.connect(websocket)
+#     await manager.connect(websocket)
 
-    while True:
-        message = await websocket.receive_text()
-        print("message printing from backend", message)
-        async for text, finish_reason in get_ai_response(message):
-            # print(text, finish_reason)
-            await websocket.send_json({"content": text, "finish_reason": finish_reason})
+#     while True:
+#         message = await websocket.receive_text()
+#         print("message printing from backend", message)
+#         async for text, finish_reason in get_ai_response(message):
+#             # print(text, finish_reason)
+#             await websocket.send_json({"content": text, "finish_reason": finish_reason})
 
 
 # ### testing database
