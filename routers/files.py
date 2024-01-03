@@ -13,6 +13,7 @@ from botocore.exceptions import NoCredentialsError
 from dotenv import load_dotenv
 import os
 import io
+import uuid
 
 load_dotenv()
 
@@ -53,45 +54,35 @@ def upload_to_s3(file_path, file_content):
 
 
 @router.post("/upload-file")
-def upload_file(
+async def upload_file(
     file: UploadFile = File(...),
 ):  # let's take nothing from the response body for now
     print("hey")
+    user_id = 1
+    draft_id = 1
+    filename = f"{user_id}-{draft_id}-{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    print(filename)
 
-    print(file)
-    print(file.filename)
+    file = await file.read()
 
-    # local_file_path = "sample.jpg"
-    # try:
-    #     current_directory = os.getcwd()
+    print("this is file", file)
+    try:
+        # Specify the S3 object key (path in the bucket)
+        s3_file_path = f"uploads/{filename}"
 
-    #     # List all files in the current directory
-    #     files = [
-    #         f
-    #         for f in os.listdir(current_directory)
-    #         if os.path.isfile(os.path.join(current_directory, f))
-    #     ]
+        # Upload the file to S3
+        success = upload_to_s3(s3_file_path, file)
 
-    #     print(files)
-    #     # Read the local file content
-    #     with open(local_file_path, "rb") as file:
-    #         file_content = file.read()
+        if success:
+            return {
+                "message": "File uploaded successfully to S3",
+                "s3_key": s3_file_path,
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to upload file to S3")
 
-    #     # Specify the S3 object key (path in the bucket)
-    #     s3_file_path = f"uploads/{local_file_path}"
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"File '{filename}' not found.")
 
-    #     # Upload the file to S3
-    #     success = upload_to_s3(s3_file_path, file_content)
-
-    #     if success:
-    #         return {
-    #             "message": "File uploaded successfully to S3",
-    #             "s3_key": s3_file_path,
-    #         }
-    #     else:
-    #         raise HTTPException(status_code=500, detail="Failed to upload file to S3")
-
-    # except FileNotFoundError:
-    #     raise HTTPException(
-    #         status_code=404, detail=f"File '{local_file_path}' not found."
-    #     )
+    except Exception as e:
+        print("error", e)
