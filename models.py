@@ -34,8 +34,7 @@ class File(Base):
     __tablename__ = "files"
 
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(Text, index=True)
     url = Column(Text)
-
     draft_id = Column(Integer, ForeignKey("drafts.id"))
-
     corresponding_draft = relationship("Draft", back_populates="files")

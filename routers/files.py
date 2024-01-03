@@ -40,10 +40,7 @@ def get_db():
 def upload_to_s3(file_path, file_content):
     try:
         # Upload the file to S3
-        # Upload/Update single file
-        s3.upload_fileobj(io.BytesIO(file_content), "aiwriter", file_path)
-
-        # s3.upload_file(file_content, S3_BUCKET_NAME, file_path)
+        s3.upload_fileobj(io.BytesIO(file_content), os.getenv("BUCKET_NAME"), file_path)
         return True
     except NoCredentialsError:
         raise HTTPException(status_code=500, detail="AWS credentials not available.")
@@ -63,16 +60,15 @@ async def upload_file(
     filename = f"{user_id}-{draft_id}-{uuid.uuid4()}.{file.filename.split('.')[-1]}"
     print(filename)
 
+    # Read the files
     file = await file.read()
 
     print("this is file", file)
     try:
         # Specify the S3 object key (path in the bucket)
         s3_file_path = f"uploads/{filename}"
-
         # Upload the file to S3
         success = upload_to_s3(s3_file_path, file)
-
         if success:
             return {
                 "message": "File uploaded successfully to S3",
@@ -85,4 +81,4 @@ async def upload_file(
         raise HTTPException(status_code=404, detail=f"File '{filename}' not found.")
 
     except Exception as e:
-        print("error", e)
+        raise HTTPException(status_code=500, detail="Failed to upload file to S3")
