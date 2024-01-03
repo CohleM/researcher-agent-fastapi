@@ -76,7 +76,7 @@ def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
         user = create_user(schemas.UserBase(email=email), db)
         # return {"isValid": "true", "message": "Magic link verified successfully"}
         access_token = create_token(
-            {"sub": user.email}, expires_delta=timedelta(minutes=2)
+            {"sub": user.email}, expires_delta=timedelta(minutes=120)
         )
         return {"access_token": access_token, "token_type": "bearer"}
 

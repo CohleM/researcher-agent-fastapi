@@ -53,7 +53,7 @@ class Draft(DraftBase):
     id: int
 
     owner_id: int
-    files: list[File] = []
+    # files: list[File] = []
     last_updated: datetime
 
     class Config:
