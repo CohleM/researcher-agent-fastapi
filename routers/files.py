@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
 from .. import schemas, crud, models
 from typing import Annotated
 
@@ -52,40 +52,46 @@ def upload_to_s3(file_path, file_content):
         )
 
 
-@router.get("/upload-file")
-def upload_file():  # let's take nothing from the response body for now
+@router.post("/upload-file")
+def upload_file(
+    file: UploadFile = File(...),
+):  # let's take nothing from the response body for now
     print("hey")
-    local_file_path = "sample.jpg"
-    try:
-        current_directory = os.getcwd()
 
-        # List all files in the current directory
-        files = [
-            f
-            for f in os.listdir(current_directory)
-            if os.path.isfile(os.path.join(current_directory, f))
-        ]
+    print(file)
+    print(file.filename)
 
-        print(files)
-        # Read the local file content
-        with open(local_file_path, "rb") as file:
-            file_content = file.read()
+    # local_file_path = "sample.jpg"
+    # try:
+    #     current_directory = os.getcwd()
 
-        # Specify the S3 object key (path in the bucket)
-        s3_file_path = f"uploads/{local_file_path}"
+    #     # List all files in the current directory
+    #     files = [
+    #         f
+    #         for f in os.listdir(current_directory)
+    #         if os.path.isfile(os.path.join(current_directory, f))
+    #     ]
 
-        # Upload the file to S3
-        success = upload_to_s3(s3_file_path, file_content)
+    #     print(files)
+    #     # Read the local file content
+    #     with open(local_file_path, "rb") as file:
+    #         file_content = file.read()
 
-        if success:
-            return {
-                "message": "File uploaded successfully to S3",
-                "s3_key": s3_file_path,
-            }
-        else:
-            raise HTTPException(status_code=500, detail="Failed to upload file to S3")
+    #     # Specify the S3 object key (path in the bucket)
+    #     s3_file_path = f"uploads/{local_file_path}"
 
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=404, detail=f"File '{local_file_path}' not found."
-        )
+    #     # Upload the file to S3
+    #     success = upload_to_s3(s3_file_path, file_content)
+
+    #     if success:
+    #         return {
+    #             "message": "File uploaded successfully to S3",
+    #             "s3_key": s3_file_path,
+    #         }
+    #     else:
+    #         raise HTTPException(status_code=500, detail="Failed to upload file to S3")
+
+    # except FileNotFoundError:
+    #     raise HTTPException(
+    #         status_code=404, detail=f"File '{local_file_path}' not found."
+    #     )
