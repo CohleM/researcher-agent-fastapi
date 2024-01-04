@@ -52,11 +52,14 @@ def upload_to_s3(file_path, file_content):
 
 @router.post("/upload-file")
 async def upload_file(
+    draft_id: int,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
     file: UploadFile = File(...),
 ):  # let's take nothing from the response body for now
-    print("hey")
-    user_id = 1
-    draft_id = 1
+    print("draft id gg ", draft_id)
+    user_id = current_user.id
+
     filename = f"{user_id}-{draft_id}-{uuid.uuid4()}.{file.filename.split('.')[-1]}"
     print(filename)
 

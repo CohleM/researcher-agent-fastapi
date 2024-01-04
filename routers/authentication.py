@@ -127,6 +127,7 @@ def send_email(to_email: str, subject: str, text_content: str):
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
 ):
+    print("get_current_user executed")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
