@@ -102,3 +102,34 @@ def get_files(
     for file in files:
         print("hmm", file.name)
     return {"files": files}
+
+
+def delete_from_r2(filename):
+    try:
+        s3.delete_object(Bucket=os.getenv("BUCKET_NAME"), Key=filename)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error deleting file to S3: {str(e)}"
+        )
+
+    return True
+
+
+@router.get("/delete-file")
+def delete_file(
+    file_id: int,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    file = crud.get_file_by_id(db, file_id)
+
+    if not file:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    deleted = delete_from_r2(f"uploads/{file.url}")
+
+    if deleted:
+        db.delete(file)  # deleting from the database too
+        db.commit()
+
+    return {"success": True}

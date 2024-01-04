@@ -62,3 +62,7 @@ def save_file(db: Session, name: str, url: str, draft_id: int):
 
 def get_files_by_draft_id(db: Session, id: int):
     return db.query(models.File).filter(models.File.draft_id == id).all()
+
+
+def get_file_by_id(db: Session, id: int):
+    return db.query(models.File).filter(models.File.id == id).first()
