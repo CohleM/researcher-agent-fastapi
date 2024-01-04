@@ -60,28 +60,32 @@ async def upload_file(
     print("draft id gg ", draft_id)
     user_id = current_user.id
 
+    # modified filename
+    original_filename = file.filename
     filename = f"{user_id}-{draft_id}-{uuid.uuid4()}.{file.filename.split('.')[-1]}"
     print(filename)
-
     # Read the files
     file = await file.read()
 
-    print("this is file", file)
     try:
         # Specify the S3 object key (path in the bucket)
         s3_file_path = f"uploads/{filename}"
         # Upload the file to S3
         success = upload_to_s3(s3_file_path, file)
-        if success:
-            return {
-                "message": "File uploaded successfully to S3",
-                "s3_key": s3_file_path,
-            }
-        else:
-            raise HTTPException(status_code=500, detail="Failed to upload file to S3")
 
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail=f"File '{filename}' not found.")
 
     except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to upload file to S3")
+
+    ## save the data to the database.
+    if success:
+        saved_file = crud.save_file(db, original_filename, filename, draft_id)
+        return {
+            "message": "File uploaded successfully to S3",
+            "s3_key": s3_file_path,
+            "file_info": saved_file,
+        }
+    else:
         raise HTTPException(status_code=500, detail="Failed to upload file to S3")
