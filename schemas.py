@@ -20,14 +20,20 @@ from datetime import datetime
 
 class FileBase(BaseModel):
     url: str
+    name: str
 
 
 class File(FileBase):
     id: int
     draft_id: int
+    last_updated: datetime
 
     class Config:
         orm_mode = True
+
+
+class AllFiles(BaseModel):
+    files: list[File]
 
 
 class DraftBase(BaseModel):

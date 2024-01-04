@@ -89,3 +89,16 @@ async def upload_file(
         }
     else:
         raise HTTPException(status_code=500, detail="Failed to upload file to S3")
+
+
+@router.get("/get-files", response_model=schemas.AllFiles)
+def get_files(
+    draft_id: int,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    files = crud.get_files_by_draft_id(db, draft_id)
+
+    for file in files:
+        print("hmm", file.name)
+    return {"files": files}

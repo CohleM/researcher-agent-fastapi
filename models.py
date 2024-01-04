@@ -38,3 +38,6 @@ class File(Base):
     url = Column(Text)
     draft_id = Column(Integer, ForeignKey("drafts.id"))
     corresponding_draft = relationship("Draft", back_populates="files")
+    last_updated = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )

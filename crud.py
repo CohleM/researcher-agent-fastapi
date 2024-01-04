@@ -58,3 +58,7 @@ def save_file(db: Session, name: str, url: str, draft_id: int):
     db.commit()
     db.refresh(file)
     return file
+
+
+def get_files_by_draft_id(db: Session, id: int):
+    return db.query(models.File).filter(models.File.draft_id == id).all()
