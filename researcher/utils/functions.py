@@ -63,8 +63,8 @@ async def generate_report(context, question, agent_role, cfg):
         )
 
         # return response
-        async for text in response:
-            yield text
+        async for text, finish_reason in response:
+            yield text, finish_reason
     except Exception as e:
         print(f"{Fore.RED} Error while generating report {e}{Style.RESET_ALL}")
         yield response

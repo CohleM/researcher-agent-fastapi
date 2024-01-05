@@ -51,8 +51,8 @@ class Researcher:
         print("Generating Report...")
         result = generate_report(self.context, self.query, self.role, self.cfg)
 
-        async for text in result:
-            yield text
+        async for text, finish_reason in result:
+            yield text, finish_reason
 
     async def get_content_using_query(self, query):
         try:

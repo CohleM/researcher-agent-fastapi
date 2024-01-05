@@ -30,7 +30,7 @@ async def get_ai_response(messages: str, cfg) -> AsyncGenerator[str, None]:
         # all_content += content
         if content:
             all_content += content
-        yield all_content
+        yield all_content, finish_reason
 
 
 # previously we used this
