@@ -15,7 +15,7 @@ async def get_ai_response(messages: str, cfg) -> AsyncGenerator[str, None]:
     OpenAI Response
     """
     response = await client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model=cfg.llm,
         messages=messages,
         stream=True,
     )

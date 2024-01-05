@@ -13,7 +13,7 @@ async def get_sub_queries(query, role, cfg):
             {"role": "user", "content": generate_search_queries_prompt(query)},
         ]
 
-        response = await get_ai_response(messages, cfg=cfg)
+        response = await create_chat_completion(messages, cfg=cfg)
         response = json.loads(response)
 
         return response
