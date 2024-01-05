@@ -133,3 +133,30 @@ def delete_file(
         db.commit()
 
     return {"success": True}
+
+
+# get the downlaod link from s3
+def get_download_link(filename):
+    response = s3.generate_presigned_url(
+        "get_object",
+        Params={"Bucket": os.getenv("BUCKET_NAME"), "Key": filename},
+        ExpiresIn=60,
+    )
+
+    return response
+
+
+@router.get("/download-file")
+def download_file(
+    file_id: int,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    file = crud.get_file_by_id(db, file_id)
+
+    if not file:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    link = get_download_link(f"uploads/{file.url}")
+
+    return {"link": link}
