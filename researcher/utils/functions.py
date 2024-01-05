@@ -51,7 +51,7 @@ async def generate_report(context, question, agent_role, cfg):
     response = ""
     try:
         print(f"using {cfg.total_words} words ")
-        response = await create_chat_completion(
+        response = get_ai_response(
             messages=[
                 {"role": "system", "content": f"{agent_role}"},
                 {
@@ -62,7 +62,9 @@ async def generate_report(context, question, agent_role, cfg):
             cfg=cfg,
         )
 
-        return response
+        # return response
+        async for text in response:
+            yield text
     except Exception as e:
         print(f"{Fore.RED} Error while generating report {e}{Style.RESET_ALL}")
-        return response
+        yield response

@@ -10,25 +10,13 @@ from openai import AsyncOpenAI
 client = AsyncOpenAI()
 
 
-async def get_ai_response(message: str, cfg) -> AsyncGenerator[str, None]:
+async def get_ai_response(messages: str, cfg) -> AsyncGenerator[str, None]:
     """
     OpenAI Response
     """
     response = await client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a helpful assistant, skilled in explaining "
-                    "complex concepts in simple terms."
-                ),
-            },
-            {
-                "role": "user",
-                "content": message,
-            },
-        ],
+        messages=messages,
         stream=True,
     )
 
@@ -42,7 +30,7 @@ async def get_ai_response(message: str, cfg) -> AsyncGenerator[str, None]:
         # all_content += content
         if content:
             all_content += content
-        yield all_content, finish_reason
+        yield all_content
 
 
 # previously we used this

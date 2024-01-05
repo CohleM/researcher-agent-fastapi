@@ -197,12 +197,12 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
         message = await websocket.receive_text()
         print("message printing from backend", message)
 
-        result = await Researcher(message).run()
+        # result = await
         #
         # async for text, finish_reason in get_ai_response(message):
-        async for text, finish_reason in result:
+        async for text in Researcher(message).run():
             # print(text, finish_reason)
-            await websocket.send_json({"content": text, "finish_reason": finish_reason})
+            await websocket.send_json({"content": text, "finish_reason": ""})
 
 
 # ### testing database
