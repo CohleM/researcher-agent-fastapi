@@ -2,20 +2,17 @@ from datetime import datetime
 
 
 def generate_qa_prompt(question, context):
+    print("yes using qa prompt")
     return (
         f'Relevant Information: """{context}"""\n\n'
         f"Using the above relevant information, answer the following"
         f' query or task: "{question}" in detail'
-        "Your answer should be well structured, informative,"
-        f"in depth and comprehensive, with facts and numbers if available."
+        "Your answer should be short and simple, accurate, and to the point"
+        f"with facts and numbers if available."
         "You must write the answer with markdown syntax.\n "
         f"Use an unbiased and journalistic tone. \n"
-        "You MUST determine your own concrete and valid opinion based on the given information."
         f" Do NOT deter to general and meaningless conclusions. If you don't know the answer please say I couln't find the answer and don't try to make up your own answer.\n"
-        f"You MUST Cite search results using inline notations. Only cite the most \
-            relevant results that answer the query accurately. Place these citations at the end \
-            of the sentence or paragraph that reference them.\n"
-        f"Please do your best, this is very important to my career. "
+        "ALWAYS return Inline SOURCES alongside the sentences if there are any and all the inline sources in the end."
         f"Assume that the current date is {datetime.now().strftime('%B %d, %Y')}"
     )
 

@@ -79,7 +79,7 @@ async def generate_qa(context, question, cfg):
             messages=[
                 {
                     "role": "system",
-                    "content": f"You are an AI critical thinker research assistant. Your sole purpose is to write well written, critically acclaimed, objective and structured reports on given text",
+                    "content": f"You are an AI critical thinker research assistant. Your sole purpose is to write well written, critically acclaimed, objective and structured answers for user's question",
                 },
                 {
                     "role": "user",
