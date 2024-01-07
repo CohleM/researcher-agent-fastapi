@@ -123,3 +123,30 @@ async def generate_summary(original_text, cfg):
     except Exception as e:
         print(f"{Fore.RED} Error while QA answers {e}{Style.RESET_ALL}")
         yield response
+
+
+# Generate paraphrased version
+async def generate_paraphrase(original_text, cfg):
+    response = ""
+    try:
+        response = get_ai_response(
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are an expert paraphraser and analyzer who can help me.",
+                },
+                {
+                    "role": "user",
+                    "content": f"task: {generate_paraphrase_prompt(original_text)}",
+                },
+            ],
+            cfg=cfg,
+        )
+
+        # return response
+        async for text, finish_reason in response:
+            yield text, finish_reason
+
+    except Exception as e:
+        print(f"{Fore.RED} Error while QA answers {e}{Style.RESET_ALL}")
+        yield response

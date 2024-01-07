@@ -15,6 +15,19 @@ def summarize(original_text):
         """
 
 
+def generate_paraphrase_prompt(original_text):
+    return f"""
+    Rephrase the given passage with the aim of expressing the content in a different way while preserving its original meaning.
+    Pay close attention to the choice of words, sentence structure, and overall tone. 
+    Ensure that the paraphrased version remains coherent, accurate, and contextually appropriate. 
+    The goal is to convey the information in a unique manner without altering the core meaning or message. 
+    Take into account any nuances, idiomatic expressions, or specific terminology present in the original passage. 
+    Please provide a comprehensive paraphrased version that captures the essence of the original text.
+    PASSAGE : {original_text}
+    Paraphrased text: 
+    """
+
+
 def generate_qa_prompt(question, context):
     print("yes using qa prompt")
     return (

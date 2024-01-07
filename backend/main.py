@@ -202,7 +202,8 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
         # async for text, finish_reason in get_ai_response(message):
         # async for text, finish_reason in Researcher(message).run():
         # async for text, finish_reason in Researcher(message).run_qa_agent():
-        async for text, finish_reason in Researcher(message).run_summarization_agent():
+        # async for text, finish_reason in Researcher(message).run_summarization_agent():
+        async for text, finish_reason in Researcher(message).run_paraphrasing_agent():
             # print(text, finish_reason)
             await websocket.send_json({"content": text, "finish_reason": finish_reason})
 
