@@ -1,6 +1,20 @@
 from datetime import datetime
 
 
+def summarize(original_text):
+    return f"""
+        Generate a concise and coherent summary from the given Context. 
+        Condense the context into a well-written summary that captures the main ideas, key points, and insights presented in the context. 
+        Prioritize clarity and brevity while retaining the essential information. 
+        Aim to convey the context's core message and any supporting details that contribute to a comprehensive understanding. 
+        Craft the summary to be self-contained, ensuring that readers can grasp the content even if they haven't read the context. 
+        Provide context where necessary and avoid excessive technical jargon or verbosity.
+        The goal is to create a summary that effectively communicates the context's content while being easily digestible and engaging.
+        CONTEXT: {original_text}
+        SUMMARY: 
+        """
+
+
 def generate_qa_prompt(question, context):
     print("yes using qa prompt")
     return (

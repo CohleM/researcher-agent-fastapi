@@ -96,3 +96,30 @@ async def generate_qa(context, question, cfg):
     except Exception as e:
         print(f"{Fore.RED} Error while QA answers {e}{Style.RESET_ALL}")
         yield response
+
+
+# Generate Summary
+async def generate_summary(original_text, cfg):
+    response = ""
+    try:
+        response = get_ai_response(
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are an expert summarizer and analyzer who can help me.",
+                },
+                {
+                    "role": "user",
+                    "content": f"task: {summarize(original_text)}",
+                },
+            ],
+            cfg=cfg,
+        )
+
+        # return response
+        async for text, finish_reason in response:
+            yield text, finish_reason
+
+    except Exception as e:
+        print(f"{Fore.RED} Error while QA answers {e}{Style.RESET_ALL}")
+        yield response

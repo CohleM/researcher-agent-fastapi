@@ -79,6 +79,18 @@ class Researcher:
         async for text, finish_reason in result:
             yield text, finish_reason
 
+    # Run summarization agent
+    async def run_summarization_agent(self):
+        """
+        Summarization agent
+        """
+        print("Running summarization agent")
+
+        result = generate_summary(self.query, self.cfg)
+
+        async for text, finish_reason in result:
+            yield text, finish_reason
+
     async def get_content_using_query(self, query):
         try:
             # Scrape Links using Duckduck go api
