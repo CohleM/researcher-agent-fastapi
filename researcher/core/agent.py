@@ -9,6 +9,7 @@ from researcher.scraping.scrape import Scraper
 from researcher.context.chunking import Chunking
 import logging
 from langsmith.run_helpers import traceable
+from researcher.search.custom import get_links_from_queries
 
 
 class Researcher:
@@ -56,11 +57,17 @@ class Researcher:
 
     async def get_content_using_query(self, query):
         try:
-            search_engine = Duckduckgo(query=query)
-            search_urls = search_engine.search(
-                max_results=self.cfg.max_search_results_per_query
+            # Scrape Links using Duckduck go api
+            # search_engine = Duckduckgo(query=query)
+            # search_urls = search_engine.search(
+            #     max_results=self.cfg.max_search_results_per_query
+            # )
+            # search_urls = [url.get("href") for url in search_urls]
+
+            # Scrape Links using Custom bs4 scraper.
+            search_urls = get_links_from_queries(
+                [query], max_links=self.cfg.max_search_results_per_query
             )
-            search_urls = [url.get("href") for url in search_urls]
 
             new_search_urls = await self.get_unique_urls(
                 search_urls
