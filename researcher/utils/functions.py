@@ -65,6 +65,34 @@ async def generate_report(context, question, agent_role, cfg):
         # return response
         async for text, finish_reason in response:
             yield text, finish_reason
+
     except Exception as e:
         print(f"{Fore.RED} Error while generating report {e}{Style.RESET_ALL}")
+        yield response
+
+
+async def generate_qa(context, question, cfg):
+    response = ""
+    try:
+        print(f"using {cfg.total_words} words ")
+        response = get_ai_response(
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are an AI critical thinker research assistant. Your sole purpose is to write well written, critically acclaimed, objective and structured reports on given text",
+                },
+                {
+                    "role": "user",
+                    "content": f"task: {generate_qa_prompt(question, context)}",
+                },
+            ],
+            cfg=cfg,
+        )
+
+        # return response
+        async for text, finish_reason in response:
+            yield text, finish_reason
+
+    except Exception as e:
+        print(f"{Fore.RED} Error while QA answers {e}{Style.RESET_ALL}")
         yield response

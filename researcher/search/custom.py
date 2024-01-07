@@ -40,7 +40,6 @@ async def get_links_from_queries(search_queries, max_links=4):
     for query, links in zip(search_queries, results):
         if links:
             #             print(f"Links for query '{query}':")
-
             return links
         else:
             print(f"No links found for query '{query}'.")

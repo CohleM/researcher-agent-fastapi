@@ -21,7 +21,7 @@ class Researcher:
         self.visited_urls = set()
         self.context = []
 
-    async def run(self):
+    async def run_researcher_agent(self):
         """
         Run the researcher
         """
@@ -55,6 +55,30 @@ class Researcher:
         async for text, finish_reason in result:
             yield text, finish_reason
 
+    async def run_qa_agent(self):
+        """
+        QA agent
+        """
+        print("Running QA agent")
+
+        print(f"🔍 Searching web with query: {self.query}")
+        content = await self.get_content_using_query(self.query)
+        context = await self.get_similar_context(self.query, content)
+        self.context.append(context)
+
+        total_chunks = 0
+        for chunk in self.context:
+            total_chunks += len(chunk)
+
+        print(total_chunks)
+        # print(f"Total chunk count {total_chunks}")
+
+        print("Generating Answers...")
+        result = generate_qa(self.context, self.query, self.cfg)
+
+        async for text, finish_reason in result:
+            yield text, finish_reason
+
     async def get_content_using_query(self, query):
         try:
             # Scrape Links using Duckduck go api
@@ -65,9 +89,11 @@ class Researcher:
             # search_urls = [url.get("href") for url in search_urls]
 
             # Scrape Links using Custom bs4 scraper.
-            search_urls = get_links_from_queries(
+            search_urls = await get_links_from_queries(
                 [query], max_links=self.cfg.max_search_results_per_query
             )
+
+            print("searhc_urls", search_urls)
 
             new_search_urls = await self.get_unique_urls(
                 search_urls
