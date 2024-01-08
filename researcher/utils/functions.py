@@ -150,3 +150,8 @@ async def generate_paraphrase(original_text, cfg):
     except Exception as e:
         print(f"{Fore.RED} Error while QA answers {e}{Style.RESET_ALL}")
         yield response
+
+
+async def stream_output(message, websocket):
+    if websocket:
+        await websocket.send_json({"content": message, "type": "log"})

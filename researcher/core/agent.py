@@ -13,11 +13,12 @@ from researcher.search.custom import get_links_from_queries
 
 
 class Researcher:
-    def __init__(self, query):
+    def __init__(self, query, websocket=None):
         self.query = query
         self.cfg = Config()
         self.agent = None
         self.role = None
+        self.websocket = websocket
         self.visited_urls = set()
         self.context = []
 
@@ -28,9 +29,11 @@ class Researcher:
         if self.cfg.search_engine == "Duckduckgo":
             retriever = Duckduckgo()
 
-        print(f"📘 Starting research for query: {self.query}")
+        await stream_output(
+            f"📘 Starting research for query: {self.query}", websocket=self.websocket)
+
         self.agent, self.role = await choose_agent(self.query, self.cfg)
-        print(f"Running {self.agent} ...")
+        await stream_output(f"Running {self.agent} ...", websocket=self.websocket)
 
         # query modification
         sub_queries = await get_sub_queries(self.query, self.role, self.cfg) + [
@@ -49,7 +52,7 @@ class Researcher:
 
         print(f"Total chunk count {total_chunks}")
 
-        print("Generating Report...")
+        await stream_output("✍🏻 Generating final Report...", websocket=self.websocket)
         result = generate_report(self.context, self.query, self.role, self.cfg)
 
         async for text, finish_reason in result:
@@ -150,7 +153,7 @@ class Researcher:
         new_urls = []
         for url in urls:
             if url not in self.visited_urls:
-                print(f"✅ Adding url {url} to our research")
+                await stream_output(f"✅ Adding url {url} to our research", websocket=self.websocket)
                 new_urls.append(url)
                 self.visited_urls.add(url)
 
