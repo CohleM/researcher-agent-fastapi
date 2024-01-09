@@ -62,9 +62,11 @@ class Researcher:
         """
         QA agent
         """
-        print("Running QA agent")
+        # print("Running QA agent")
 
         print(f"🔍 Searching web with query: {self.query}")
+        await stream_output(
+            f"📘 Starting QA for query: {self.query}", websocket=self.websocket)
         content = await self.get_content_using_query(self.query)
         context = await self.get_similar_context(self.query, content)
         self.context.append(context)
@@ -77,6 +79,8 @@ class Researcher:
         # print(f"Total chunk count {total_chunks}")
 
         print("Generating Answers...")
+        await stream_output(
+            f"Generating Answer ...", websocket=self.websocket)
         result = generate_qa(self.context, self.query, self.cfg)
 
         async for text, finish_reason in result:

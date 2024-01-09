@@ -194,18 +194,30 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
     await manager.connect(websocket)
 
     while True:
-        message = await websocket.receive_text()
-        print("message printing from backend", message)
+        message = await websocket.receive_json() # message has type { 'text' : text, 'allAIOptions' : allAIOptions}
+        # allAIOptions has type type AIOptionsType = { AICommands : string, webSearch : boolean }
+        print("message printing from backend", message['allAIOptions'], type(message))
+        query = message['text']
+        options = message['allAIOptions']
 
-        # result = await
-        #
+        if options['AICommands'] == '1' and options['webSearch'] == True: # 1 belongs to generate report
+            result = Researcher(query,websocket).run_researcher_agent()
+        elif options['AICommands'] == '2' and options['webSearch'] == True: # 2 belongs to generate QA
+            result = Researcher(query,websocket).run_qa_agent()
+        elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
+            result = Researcher(query,websocket).run_summarization_agent()
+        elif options['AICommands'] == '4' and options['webSearch'] == False: # 4 belongs to generate Paraphrase
+            result = Researcher(query,websocket).run_paraphrasing_agent()
+ 
+
+
+
+
         # async for text, finish_reason in get_ai_response(message):
-        async for text, finish_reason in Researcher(message,websocket).run_researcher_agent():
+        # async for text, finish_reason in Researcher(message,websocket).run_researcher_agent():
         # async for text, finish_reason in Researcher(message).run_qa_agent():
         # async for text, finish_reason in Researcher(message).run_summarization_agent():
-        # async for text, finish_reason in Researcher(
-        #     message, websocket
-        # ).run_paraphrasing_agent():
+        async for text, finish_reason in result:
             # print(text, finish_reason)
             await websocket.send_json({"content": text, "finish_reason": finish_reason})
 

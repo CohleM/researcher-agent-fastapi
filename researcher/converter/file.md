@@ -1,0 +1,69 @@
+**Pe**rplexity RaisesNew Seed Round
+
+## **Introduction**
+
+Perplexity, an emerging artificial intelligence (AI) startup, has recently completed a new seed funding round. The funding round has provided the company with additional capital to further develop its AI-powered search engine. This comprehensive report aims to provide an in-depth analysis of the new seed round, highlighting the key details, investors, and implications for Perplexity's future.
+
+## **Funding Details**
+
+Perplexity successfully raised a new seed round, securing additional capital to support the development of its AI-powered search engine. The exact amount of funding raised in this round has not been provided in the available information.
+
+### **Investors**
+
+According to the available information, the investors in Perplexity's new seed round include:
+
+1. New Enterprise Associates (NEA)
+2. Elad Gil
+3. Nat Friedman
+4. Bob Muglia
+5. Susan Wojcicki
+6. Paul Buchheit
+7. Peter Sonsini
+8. Databricks Ventures
+9. Others
+
+The participation of prominent investors like NEA, Elad Gil, and Nat Friedman signifies confidence in Perplexity's potential and highlights the attractiveness of the company's AI-powered search engine concept.
+
+## **Perplexity's AI-Powered Search Engine**
+
+Perplexity's AI-powered search engine is an innovative solution to traditional search engines. Unlike conventional search engines, Perplexity's search engine adopts a chatbot-like interface. This unique approach allows users to interact with the platform using natural language, enabling a more intuitive and user-friendly search experience.
+
+The search engine utilizes large language models (LLMs) developed in-house by Perplexity's team. These LLMs enable the search engine to process and generate human-like text, enhancing natural language understanding and generation capabilities.
+
+### **Key Features**
+
+Perplexity's search engine offers several key features to enhance the search experience:
+
+1. Instant and Reliable Answers: With Perplexity's search tools, users can receive instant and reliable answers to their queries. The search engine provides complete sources and citations, eliminating the need to click on multiple links or compare answers from different sources.
+2. Accuracy and Transparency: Perplexity emphasizes accuracy and transparency in its search results. The search engine aims to eliminate SEO spam, sponsored links, and unreliable information, providing users with a more efficient and trustworthy way to consume and share information.
+3. Copilot AI Research Assistant: Perplexity has also launched Copilot, an AI research assistant. Copilot allows users to customize search queries with follow-up questions, introducing the concept of generative user interfaces. This feature enables users to obtain more relevant and comprehensive answers compared to traditional AI chatbots, search engines, or research tools.
+
+### **Milestones and Achievements**
+
+Perplexity has achieved significant milestones since its inception in August 2022. The company's notable achievements include:
+
+* Completion of a successful Series B funding round, raising $73.6 million.
+* Total funding raised to date amounting to $100 million.
+* Over 500 million queries resolved by Perplexity's search engine in 2023.
+
+These milestones highlight the growing traction and adoption of Perplexity's AI-powered search engine. The company's ability to secure substantial funding and resolve a significant number of queries showcases the potential of its innovative approach to search.
+
+## **Conclusion**
+
+Perplexity's successful completion of a new seed funding round underscores the market's confidence in its AI-powered search engine. With prominent investors backing the company, Perplexity has the necessary capital to further develop its technology and expand its user base. The unique features of Perplexity's search engine, such as instant and reliable answers, accuracy, and transparency, along with the introduction of Copilot AI research assistant, position the company as an innovative player in the search engine market.
+
+The milestones achieved by Perplexity, including the substantial funding raised and the resolution of over 500 million queries in 2023, further reinforce its potential for growth and success. As Perplexity continues to refine and improve its AI-powered search engine, it has the opportunity to disrupt the traditional search engine landscape and provide a more intuitive and efficient search experience for users.
+
+In conclusion, Perplexity's new seed round funding provides a strong foundation for the company's future growth and innovation in the AI-powered search engine space. With the support of prominent investors and the ongoing development of its unique technology, Perplexity is poised to make a significant impact on the search engine industry.
+
+## **References**
+
+1. Cointelegraph: [**Perplexity raises $73M Series B off reported $520M valuation for AI-powered search engine**](https://cointelegraph.com/news/perplexity-artificial-intelligence-raises-73-m-series-b-off-520-m-valuation-ai-powered-search-engine).
+2. Game is Hard: [**AI search startup Perplexity AI raises $73.6 million in funding from Nvidia & Bezos**](https://gameishard.gg/news/ai-search-startup-perplexity-ai-raises-73-6-million-in-funding-from-nvidia-bezos/755929/).
+3. Perplexity Blog: [**Perplexity raises series B funding round**](https://blog.perplexity.ai/blog/perplexity-raises-series-b-funding-round).
+4. Twitter: [**Perplexity AI funding announcement**](https://twitter.com/PerplexityAI/status/...).
+
+OpenAI's recent drama explain.
+
+Japan's plane crash
+
