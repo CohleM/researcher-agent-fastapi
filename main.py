@@ -1,16 +1,8 @@
-import asyncio
+from backend.server import app
+from dotenv import load_dotenv
+load_dotenv()
 
-from researcher.core.agent import Researcher
+if __name__ == "__main__":
+    import uvicorn
 
-async def main():
-
-    
-    r = Researcher('taylor swifts concert in 2023. How was it?')
-
-    response = await r.run()
-
-    print(response)
-
-
-asyncio.run(main())
-
+    uvicorn.run(app, host="0.0.0.0", port=8000)

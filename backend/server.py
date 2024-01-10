@@ -35,7 +35,8 @@ from .database import SessionLocal, engine
 from .routers import users, authentication, drafts, files
 import sys
 
-sys.path.append("/Users/cohlem/projects/FastAPI/backend-fastapi/researcher")
+# sys.path.append("/Users/cohlem/projects/FastAPI/")
+# sys.path.append("/Users/cohlem/Projects/FastAPI/backend-fastapi")
 
 from researcher.core.agent import Researcher
 
