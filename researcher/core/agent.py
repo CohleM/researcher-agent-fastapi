@@ -26,8 +26,6 @@ class Researcher:
         """
         Run the researcher
         """
-        if self.cfg.search_engine == "Duckduckgo":
-            retriever = Duckduckgo()
 
         await stream_output(
             f"📘 Starting research for query: {self.query}", websocket=self.websocket)

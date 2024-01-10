@@ -197,7 +197,7 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
         message = await websocket.receive_json() # message has type { 'text' : text, 'allAIOptions' : allAIOptions}
         # allAIOptions has type type AIOptionsType = { AICommands : string, webSearch : boolean }
         print("message printing from backend", message['allAIOptions'], type(message))
-        query = message['text']
+        query = message['allAIOptions']['Text']
         options = message['allAIOptions']
 
         if options['AICommands'] == '1' and options['webSearch'] == True: # 1 belongs to generate report
