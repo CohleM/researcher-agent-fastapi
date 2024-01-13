@@ -1,0 +1,91 @@
+# # version: "3s"
+
+# # services:
+# #   web:
+# #     build: .
+# #     depends_on:
+# #       - db
+# #     volumes:
+# #       - ./:/code:ro
+# #     environment:
+# #       - SQLALCHEMY_DATABASE_URL=postgresql://cohlem69:mig33mig@db:5432/aiwriter
+# #     ports:
+# #       - "8000:80"
+# #   db:
+# #     image: postgres:16-alpine
+# #     volumes:
+# #       - postgres_data:/var/lib/postgresql/data/
+# #     environment:
+# #       - POSTGRES_USER=cohlem69
+# #       - POSTGRES_PASSWORD=mig33mig
+# #       - POSTGRES_DB=aiwriter
+# #     expose:
+# #       - 5432
+
+# # volumes:
+# #   postgres_data:
+
+# version: "3.8" # Specify Docker Compose file version
+
+# services:
+#   web: # Define the FastAPI application service
+#     build: . # Build the image from the current directory
+#     ports:
+#       - "8000:80" # Map port 8000 of the container to port 8000 on the host
+#     environment:
+#       - SQLALCHEMY_DATABASE_URL=postgresql://manish:Callm3honey@db:5432/aiwriter1 # Set environment variable for database connection
+#     depends_on:
+#       - db # Ensure the database is started first
+#     volumes:
+#       - .:/code # Mount the current directory to /app in the container
+
+#   db: # Define the PostgreSQL database service
+#     image: postgres:16 # Use the official PostgreSQL image
+#     environment:
+#       - POSTGRES_USER=manish # Set database user
+#       - POSTGRES_PASSWORD=Callm3honey # Set database password
+#       - POSTGRES_DB=aiwriter1 # Set database name
+#     expose:
+#       - 5432
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data/ # Persist database data
+
+# volumes:
+#   postgres_data: # Define a volume for PostgreSQL data
+
+version: "3.8" # Specify Docker Compose file version
+
+services:
+  web: # Define the FastAPI application service
+    build: . # Build the image from the current directory
+    ports:
+      - "8000:80" # Map port 8000 of the container to port 8000 on the host
+    environment:
+      - DATABASE_URL=postgresql://postgres:Bright#1270@db:5432/dockert
+    depends_on:
+      - db # Ensure the database is started first
+    volumes:
+      - .:/code # Mount the current directory to /app in the container
+    networks:
+      - mynetwork
+
+  db: # Define the PostgreSQL database service
+    image: postgres:16-alpine # Use the official PostgreSQL image
+
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Bright#1270
+      - POSTGRES_DB=dockert
+    expose:
+      - 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # Persist database data
+    networks:
+      - mynetwork
+
+volumes:
+  postgres_data: # Define a volume for PostgreSQL data
+
+networks:
+  mynetwork:
+    driver: bridge

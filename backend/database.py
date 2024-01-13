@@ -1,12 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
+import os
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-SQLALCHEMY_DATABASE_URL = "postgresql://cohlem69:mig33mig@localhost/aiwriter"
+# SQLALCHEMY_DATABASE_URL = "postgresql://manish:Callm3honey@db:5432/aiwriter1"
 
+DATABASE_URL="postgresql://postgres:Bright#1270@db:5432/dockert"
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL 
+    DATABASE_URL 
 )
 
 # engine = create_engine(
