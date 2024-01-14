@@ -2,12 +2,17 @@ from openai import OpenAI
 import logging
 from langsmith.run_helpers import traceable
 from typing import AsyncGenerator, NoReturn
-
+import os
 # logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
+
+from dotenv import load_dotenv
+
 from openai import AsyncOpenAI
 
-client = AsyncOpenAI()
+load_dotenv()
+
+client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 
 async def get_ai_response(messages: str, cfg) -> AsyncGenerator[str, None]:
@@ -37,7 +42,7 @@ async def get_ai_response(messages: str, cfg) -> AsyncGenerator[str, None]:
 async def create_chat_completion(messages, cfg, stream=False):
     client = OpenAI(
         # defaults to os.environ.get("OPENAI_API_KEY")
-        #     api_key= oai_key,
+        api_key=os.getenv('OPENAI_API_KEY')
     )
 
     if not stream:
