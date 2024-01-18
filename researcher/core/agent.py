@@ -22,7 +22,7 @@ class Researcher:
         self.visited_urls = set()
         self.context = []
 
-    async def run_researcher_agent(self):
+    async def run_researcher_agent(self, stop_event):
         """
         Run the researcher
         """
@@ -51,12 +51,12 @@ class Researcher:
         print(f"Total chunk count {total_chunks}")
 
         await stream_output("✍🏻 Generating final Report...", websocket=self.websocket)
-        result = generate_report(self.context, self.query, self.role, self.cfg)
+        result = generate_report(self.context, self.query, self.role, self.cfg, stop_event)
 
         async for text, finish_reason in result:
             yield text, finish_reason
 
-    async def run_qa_agent(self):
+    async def run_qa_agent(self, stop_event):
         """
         QA agent
         """
@@ -79,19 +79,19 @@ class Researcher:
         print("Generating Answers...")
         await stream_output(
             f"Generating Answer ...", websocket=self.websocket)
-        result = generate_qa(self.context, self.query, self.cfg)
+        result = generate_qa(self.context, self.query, self.cfg, stop_event)
 
         async for text, finish_reason in result:
             yield text, finish_reason
 
     # Run summarization agent
-    async def run_summarization_agent(self):
+    async def run_summarization_agent(self, stop_event):
         """
         Summarization agent
         """
         print("Running summarization agent")
 
-        result = generate_summary(self.query, self.cfg)
+        result = generate_summary(self.query, self.cfg, stop_event)
 
         async for text, finish_reason in result:
             yield text, finish_reason

@@ -9,6 +9,7 @@ import time
 from typing import AsyncGenerator, NoReturn
 
 from .websocket_manager import WebSocketManager
+from .routers.authentication import get_current_user
 from datetime import datetime, timedelta
 
 from typing import Annotated
@@ -21,6 +22,7 @@ from pydantic import BaseModel
 import requests
 import json
 import os
+
 
 
 ##db
@@ -191,10 +193,11 @@ async def get_ai_response(message: str) -> AsyncGenerator[str, None]:
 
 
 @app.get("/stop-stream")
-async def stop_stream():
-    stop_event.set()
-    print('yaas stopped the stream')
-    return {"message": "Streaming is stopped"}
+async def stop_stream(current_user: Annotated[schemas.UserResponse, Depends(get_current_user)]):
+    if current_user:
+        stop_event.set()
+        print('yaas stopped the stream')
+        return {"message": "Streaming is stopped"}
 
 
 
@@ -212,15 +215,15 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
         print("message printing from backend", message['allAIOptions'], type(message))
         query = message['allAIOptions']['Text']
         options = message['allAIOptions']
+        stop_event.clear()
 
         if options['AICommands'] == '1' and options['webSearch'] == True: # 1 belongs to generate report
-            result = Researcher(query,websocket).run_researcher_agent()
+            result = Researcher(query,websocket).run_researcher_agent(stop_event)
         elif options['AICommands'] == '2' and options['webSearch'] == True: # 2 belongs to generate QA
-            result = Researcher(query,websocket).run_qa_agent()
+            result = Researcher(query,websocket).run_qa_agent(stop_event)
         elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
-            result = Researcher(query,websocket).run_summarization_agent()
+            result = Researcher(query,websocket).run_summarization_agent(stop_event)
         elif options['AICommands'] == '4' and options['webSearch'] == False: # 4 belongs to generate Paraphrase
-            stop_event.clear()
             result = Researcher(query,websocket).run_paraphrasing_agent(stop_event)
  
 

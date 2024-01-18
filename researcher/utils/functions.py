@@ -47,11 +47,12 @@ async def choose_agent(query, cfg):
 
 
 @traceable(run_type="llm", name="report")
-async def generate_report(context, question, agent_role, cfg):
+async def generate_report(context, question, agent_role, cfg, stop_event):
     response = ""
     try:
         print(f"using {cfg.total_words} words ")
         response = get_ai_response(
+            stop_event,
             messages=[
                 {"role": "system", "content": f"{agent_role}"},
                 {
@@ -71,11 +72,11 @@ async def generate_report(context, question, agent_role, cfg):
         yield response
 
 
-async def generate_qa(context, question, cfg):
+async def generate_qa(context, question, cfg, stop_event):
     response = ""
     try:
         print(f"using {cfg.total_words} words ")
-        response = get_ai_response(
+        response = get_ai_response(stop_event,
             messages=[
                 {
                     "role": "system",
@@ -99,10 +100,10 @@ async def generate_qa(context, question, cfg):
 
 
 # Generate Summary
-async def generate_summary(original_text, cfg):
+async def generate_summary(original_text, cfg, stop_event):
     response = ""
     try:
-        response = get_ai_response(
+        response = get_ai_response(stop_event,
             messages=[
                 {
                     "role": "system",
