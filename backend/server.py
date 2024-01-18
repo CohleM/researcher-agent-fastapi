@@ -20,6 +20,7 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 import requests
 import json
+import os
 
 
 ##db
@@ -37,12 +38,13 @@ import sys
 
 # sys.path.append("/Users/cohlem/projects/FastAPI/")
 # sys.path.append("/Users/cohlem/Projects/FastAPI/backend-fastapi")
-
+from dotenv import load_dotenv
 from researcher.core.agent import Researcher
 
 
 models.Base.metadata.create_all(bind=engine)
 
+load_dotenv()
 
 # Initials
 manager = WebSocketManager()
@@ -60,6 +62,7 @@ app.include_router(files.router)
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    f"{os.getenv('FRONTEND_URL')}"
 ]
 
 # Add this to your FastAPI app
@@ -211,13 +214,6 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
             result = Researcher(query,websocket).run_paraphrasing_agent()
  
 
-
-
-
-        # async for text, finish_reason in get_ai_response(message):
-        # async for text, finish_reason in Researcher(message,websocket).run_researcher_agent():
-        # async for text, finish_reason in Researcher(message).run_qa_agent():
-        # async for text, finish_reason in Researcher(message).run_summarization_agent():
         async for text, finish_reason in result:
             # print(text, finish_reason)
             await websocket.send_json({"content": text, "finish_reason": finish_reason})

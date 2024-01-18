@@ -97,10 +97,11 @@ def send_magic_link(user: schemas.UserBase):
     token = create_token({"sub": user.email})
 
     # Send the token via email (replace with your email sending logic)
+    ## http://localhost:3000/authentication?token={token}
     send_email(
         user.email,
         "Log into OkProfessor",
-        f"Click on this link to authenticate: http://localhost:3000/authentication?token={token}",
+        f"Click on this link to authenticate: {os.getenv('FRONTEND_URL')}/authentication?token={token}",
     )
     return {"message": f"Sent the verification email to {user.email}"}
 
