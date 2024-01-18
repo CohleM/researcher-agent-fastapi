@@ -40,7 +40,7 @@ import sys
 # sys.path.append("/Users/cohlem/Projects/FastAPI/backend-fastapi")
 from dotenv import load_dotenv
 from researcher.core.agent import Researcher
-
+from threading import Event
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -51,6 +51,7 @@ manager = WebSocketManager()
 app = FastAPI()
 client = AsyncOpenAI()
 
+stop_event = Event()
 
 app.include_router(users.router)
 app.include_router(authentication.router)
@@ -189,6 +190,14 @@ async def get_ai_response(message: str) -> AsyncGenerator[str, None]:
 #     return HTMLResponse(html)
 
 
+@app.get("/stop-stream")
+async def stop_stream():
+    stop_event.set()
+    print('yaas stopped the stream')
+    return {"message": "Streaming is stopped"}
+
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
     """
@@ -211,7 +220,8 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
         elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
             result = Researcher(query,websocket).run_summarization_agent()
         elif options['AICommands'] == '4' and options['webSearch'] == False: # 4 belongs to generate Paraphrase
-            result = Researcher(query,websocket).run_paraphrasing_agent()
+            stop_event.clear()
+            result = Researcher(query,websocket).run_paraphrasing_agent(stop_event)
  
 
         async for text, finish_reason in result:

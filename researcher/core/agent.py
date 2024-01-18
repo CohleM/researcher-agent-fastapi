@@ -97,13 +97,13 @@ class Researcher:
             yield text, finish_reason
 
     # Run summarization agent
-    async def run_paraphrasing_agent(self):
+    async def run_paraphrasing_agent(self, stop_event):
         """
         Summarization agent
         """
         print("Running paraphrasing agent")
 
-        result = generate_paraphrase(self.query, self.cfg)
+        result = generate_paraphrase(self.query, self.cfg, stop_event)
 
         async for text, finish_reason in result:
             yield text, finish_reason

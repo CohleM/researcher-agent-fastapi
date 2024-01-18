@@ -126,10 +126,10 @@ async def generate_summary(original_text, cfg):
 
 
 # Generate paraphrased version
-async def generate_paraphrase(original_text, cfg):
+async def generate_paraphrase(original_text, cfg, stop_event):
     response = ""
     try:
-        response = get_ai_response(
+        response = get_ai_response(stop_event,
             messages=[
                 {
                     "role": "system",
@@ -140,7 +140,9 @@ async def generate_paraphrase(original_text, cfg):
                     "content": f"task: {generate_paraphrase_prompt(original_text)}",
                 },
             ],
+            
             cfg=cfg,
+            
         )
 
         # return response

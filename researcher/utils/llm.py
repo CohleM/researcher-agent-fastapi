@@ -12,31 +12,41 @@ from openai import AsyncOpenAI
 
 load_dotenv()
 
-client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+# client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 
-async def get_ai_response(messages: str, cfg) -> AsyncGenerator[str, None]:
+async def get_ai_response(stop_event, messages: str, cfg) -> AsyncGenerator[str, None]:
     """
     OpenAI Response
     """
-    response = await client.chat.completions.create(
-        model=cfg.llm,
-        messages=messages,
-        stream=True,
-    )
 
-    all_content = ""
-    async for chunk in response:
-        content = chunk.choices[0].delta.content
-        finish_reason = chunk.choices[0].finish_reason
-        # print("haha", content)
-        print(content)
-        # if content:
-        # all_content += content
-        if content:
-            all_content += content
-        yield all_content, finish_reason
+    try:
+        
+        client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        response = await client.chat.completions.create(
+            model=cfg.llm,
+            messages=messages,
+            stream=True,
+        )
 
+        all_content = ""
+        async for chunk in response:
+            content = chunk.choices[0].delta.content
+            finish_reason = chunk.choices[0].finish_reason
+            # print("haha", content)
+            print(content)
+            # if content:
+            # all_content += content
+            if content:
+                all_content += content
+                # Check the stop event and exit the loop if it's set
+                if stop_event.is_set():
+                    await client.close()
+                    break
+            yield all_content, finish_reason
+
+    except Exception as e:
+        print('yolooo haha , error', e)
 
 # previously we used this
 async def create_chat_completion(messages, cfg, stream=False):
