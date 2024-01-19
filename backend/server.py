@@ -209,34 +209,48 @@ async def stop_stream(current_user: Annotated[schemas.UserResponse, Depends(get_
 
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
+async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
     """
     Websocket for AI responses
     """
-
+    # print('WEBSOCKET,', current_user)
+    ## pass the token from the frontend on every request. 
     await manager.connect(websocket)
 
     while True:
         message = await websocket.receive_json() # message has type { 'text' : text, 'allAIOptions' : allAIOptions}
-        # allAIOptions has type type AIOptionsType = { AICommands : string, webSearch : boolean }
-        print("message printing from backend", message['allAIOptions'], type(message))
-        query = message['allAIOptions']['Text']
-        options = message['allAIOptions']
-        stop_event.clear()
 
-        if options['AICommands'] == '1' and options['webSearch'] == True: # 1 belongs to generate report
-            result = Researcher(query,websocket).run_researcher_agent(stop_event)
-        elif options['AICommands'] == '2' and options['webSearch'] == True: # 2 belongs to generate QA
-            result = Researcher(query,websocket).run_qa_agent(stop_event)
-        elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
-            result = Researcher(query,websocket).run_summarization_agent(stop_event)
-        elif options['AICommands'] == '4' and options['webSearch'] == False: # 4 belongs to generate Paraphrase
-            result = Researcher(query,websocket).run_paraphrasing_agent(stop_event)
- 
+        print('Thsii is message',message)
+        token = message['allAIOptions']['token']
+        try:
+            current_user = await get_current_user(token)
 
-        async for text, finish_reason in result:
-            # print(text, finish_reason)
-            await websocket.send_json({"content": text, "finish_reason": finish_reason})
+            if current_user:
+                print('use authenticated and processing request')
+                # allAIOptions has type type AIOptionsType = { AICommands : string, webSearch : boolean }
+                print("message printing from backend", message['allAIOptions'])
+
+                query = message['allAIOptions']['Text']
+                options = message['allAIOptions']
+                stop_event.clear()
+
+                if options['AICommands'] == '1' and options['webSearch'] == True: # 1 belongs to generate report
+                    result = Researcher(query,websocket).run_researcher_agent(stop_event)
+                elif options['AICommands'] == '2' and options['webSearch'] == True: # 2 belongs to generate QA
+                    result = Researcher(query,websocket).run_qa_agent(stop_event)
+                elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
+                    result = Researcher(query,websocket).run_summarization_agent(stop_event)
+                elif options['AICommands'] == '4' and options['webSearch'] == False: # 4 belongs to generate Paraphrase
+                    result = Researcher(query,websocket).run_paraphrasing_agent(stop_event)
+        
+
+                async for text, finish_reason in result:
+                    # print(text, finish_reason)
+                    await websocket.send_json({"content": text, "finish_reason": finish_reason, 'authenticated' : 'yes'})
+
+        except Exception as e:
+            print('The user was not authenticated')
+            await websocket.send_json({'authenticated' : 'no'})
 
 
 # ### testing database
