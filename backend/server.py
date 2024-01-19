@@ -44,6 +44,11 @@ from dotenv import load_dotenv
 from researcher.core.agent import Researcher
 from threading import Event
 
+from starlette.requests import Request 
+from starlette.middleware.sessions import SessionMiddleware 
+
+
+
 models.Base.metadata.create_all(bind=engine)
 
 load_dotenv()
@@ -69,6 +74,8 @@ origins = [
 ]
 
 # Add this to your FastAPI app
+app.add_middleware(SessionMiddleware ,secret_key='maihoonjiyan') 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

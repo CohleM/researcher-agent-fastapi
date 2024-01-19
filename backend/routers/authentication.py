@@ -12,6 +12,9 @@ import os
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2AuthorizationCodeBearer
 
+from starlette.requests import Request
+from google.oauth2 import id_token 
+from google.auth.transport import requests 
 
 router = APIRouter(tags=["auth"])
 
@@ -174,3 +177,47 @@ async def get_user_info(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+## Login with google 
+  
+@router.get("/google-auth") 
+def authentication(request: Request,token:str, db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="NOT Authorized by Google",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try: 
+        # Specify the CLIENT_ID of the app that accesses the backend: 
+        user =id_token.verify_oauth2_token(token, requests.Request(), os.getenv('GOOGLE_CLIENT_ID')) 
+        print('USER', user)
+        # request.session['user'] = dict({ 
+        #     "email" : user["email"]  
+        # }) 
+        # return user['name'] + ' Logged In successfully'
+    except Exception as e:
+        print('ERROR', e)
+        raise credentials_exception
+
+    try:
+        email: str = user['email'] 
+        if email is None:
+            raise credentials_exception
+
+        user = create_user(schemas.UserBase(email=email), db)
+        # return {"isValid": "true", "message": "Magic link verified successfully"}
+        access_token = create_token(
+            {"sub": user.email}, expires_delta=timedelta(minutes=120)
+        )
+        print(' Google login this is executed')
+        return {"access_token": access_token, "token_type": "bearer"}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+ 
