@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from jose import JWTError, jwt, ExpiredSignatureError
 import json
-import requests
+import requests as magic_link_request
 from .. import schemas, crud
 from datetime import datetime, timedelta
 from typing import Optional, Annotated
@@ -124,7 +124,7 @@ def send_email(to_email: str, subject: str, text_content: str):
         "api-key": os.getenv("BREVO_TOKEN"),
         "content-type": "application/json",
     }
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = magic_link_request.request("POST", url, headers=headers, data=payload)
     print(response.text)
 
 
@@ -159,6 +159,41 @@ async def get_current_user(
         print("this time its me")
         raise credentials_exception
     return user
+
+
+async def get_current_user_websocket(
+    token, db
+):
+    print("get_current_user executed")
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    except JWTError:
+        raise credentials_exception
+
+    # user = get_user(fake_users_db, username=token_data.username)
+    user = crud.get_user_by_email(db=db, email=email)
+    if user is None:
+        print("this time its me")
+        raise credentials_exception
+    return user
+
+
 
 
 @router.get("/userinfo", response_model=schemas.User)

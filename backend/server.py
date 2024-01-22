@@ -9,7 +9,7 @@ import time
 from typing import AsyncGenerator, NoReturn
 
 from .websocket_manager import WebSocketManager
-from .routers.authentication import get_current_user
+from .routers.authentication import get_current_user,get_current_user_websocket
 from datetime import datetime, timedelta
 
 from typing import Annotated
@@ -83,6 +83,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 # with open("index.html") as f:
 #     html = f.read()
 
@@ -221,9 +232,10 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
         message = await websocket.receive_json() # message has type { 'text' : text, 'allAIOptions' : allAIOptions}
 
         print('Thsii is message',message)
-        token = message['allAIOptions']['token']
+        token = message['allAIOptions']['Token']
+
         try:
-            current_user = await get_current_user(token)
+            current_user = await get_current_user_websocket(token, next(get_db()))
 
             if current_user:
                 print('use authenticated and processing request')
@@ -248,8 +260,9 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     # print(text, finish_reason)
                     await websocket.send_json({"content": text, "finish_reason": finish_reason, 'authenticated' : 'yes'})
 
+
         except Exception as e:
-            print('The user was not authenticated')
+            print('The user was not authenticated', e)
             await websocket.send_json({'authenticated' : 'no'})
 
 
