@@ -14,7 +14,7 @@
 # #   db:
 # #     image: postgres:16-alpine
 # #     volumes:
-# #       - postgres_data:/var/lib/postgresql/data/
+# #       - new_postgres_data:/var/lib/postgresql/data/
 # #     environment:
 # #       - POSTGRES_USER=cohlem69
 # #       - POSTGRES_PASSWORD=mig33mig
@@ -23,7 +23,7 @@
 # #       - 5432
 
 # # volumes:
-# #   postgres_data:
+# #   new_postgres_data:
 
 # version: "3.8" # Specify Docker Compose file version
 
@@ -48,10 +48,10 @@
 #     expose:
 #       - 5432
 #     volumes:
-#       - postgres_data:/var/lib/postgresql/data/ # Persist database data
+#       - new_postgres_data:/var/lib/postgresql/data/ # Persist database data
 
 # volumes:
-#   postgres_data: # Define a volume for PostgreSQL data
+#   new_postgres_data: # Define a volume for PostgreSQL data
 
 version: "3.8" # Specify Docker Compose file version
 
@@ -84,12 +84,32 @@ services:
     expose:
       - 5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data/ # Persist database data
+      - postgres_data_3:/var/lib/postgresql/data/ # Persist database data
     networks:
       - mynetwork
 
+  # backup:
+  #   image: ubuntu
+  #   volumes:
+  #     - new_postgres_data:/dbdata
+  #     - ./backup:/backup
+  #   command: ["bash", "-c", "tar cvf /backup/backup.tar /dbdata"]
+  #   networks:
+  #     - mynetwork
+
+  # restore:
+  #   image: ubuntu
+  #   volumes:
+  #     - new_postgres_data:/dbdata
+  #     - ./backup:/backup
+  #   command: ["bash", "-c", "tar xvf /backup/backup.tar -C /dbdata"]
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - mynetwork
+
 volumes:
-  postgres_data: # Define a volume for PostgreSQL data
+  postgres_data_3: # Define a volume for PostgreSQL data
 
 networks:
   mynetwork:
