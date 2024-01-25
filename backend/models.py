@@ -11,8 +11,13 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     # hashed_password = Column(String)
     # is_active = Column(Boolean, default=True)
+    subscription = Column(String, default='free')  # Assuming subscription is a string type
+    credits = Column(Integer, default=150)  # Assuming credits is an integer type
 
     drafts = relationship("Draft", back_populates="owner")
+    
+    
+
 
 
 class Draft(Base):

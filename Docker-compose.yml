@@ -84,7 +84,7 @@ services:
     expose:
       - 5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data/ # Persist database data
+      - postgres_data_3:/var/lib/postgresql/data/ # Persist database data
     networks:
       - mynetwork
 
@@ -109,7 +109,7 @@ services:
   #     - mynetwork
 
 volumes:
-  postgres_data: # Define a volume for PostgreSQL data
+  postgres_data_3: # Define a volume for PostgreSQL data
 
 networks:
   mynetwork:
