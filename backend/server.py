@@ -266,7 +266,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
 
                 async for text, finish_reason in result:
                     # print(text, finish_reason)
-                    await websocket.send_json({"content": text, "finish_reason": finish_reason, 'authenticated' : 'yes'})
+                    await websocket.send_json({"content": text, "finish_reason": finish_reason, 'authenticated' : 'yes', 'error' : 'none'})
 
             else:
                 await websocket.send_json({'authenticated' : 'no'})
