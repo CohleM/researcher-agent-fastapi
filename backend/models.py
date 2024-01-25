@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, DateT
 from sqlalchemy.orm import relationship
 from sqlalchemy import func
 from .database import Base
+from datetime import datetime, timedelta
 
 
 class User(Base):
@@ -13,6 +14,7 @@ class User(Base):
     # is_active = Column(Boolean, default=True)
     subscription = Column(String, default='free')  # Assuming subscription is a string type
     credits = Column(Integer, default=150)  # Assuming credits is an integer type
+    credits_expiration_date = Column(DateTime, server_default=func.now() + timedelta(days=30))
 
     drafts = relationship("Draft", back_populates="owner")
     

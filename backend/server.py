@@ -238,9 +238,17 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
             current_user = await get_current_user_websocket(token, next(get_db()))
 
             if current_user:
+
+                if current_user.credits is None or current_user.credits < 10:
+                    print('Insufficient credit')
+                    await websocket.send_json({"error": "Insufficient credits", 'authenticated': 'yes'})
+                    continue  # Skip processing if credits are insufficient
+                
+                print('User credits', current_user.credits)
                 print('use authenticated and processing request')
                 # allAIOptions has type type AIOptionsType = { AICommands : string, webSearch : boolean }
                 print("message printing from backend", message['allAIOptions'])
+
 
                 query = message['allAIOptions']['Text']
                 options = message['allAIOptions']
@@ -260,6 +268,8 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     # print(text, finish_reason)
                     await websocket.send_json({"content": text, "finish_reason": finish_reason, 'authenticated' : 'yes'})
 
+            else:
+                await websocket.send_json({'authenticated' : 'no'})
 
         except Exception as e:
             print('The user was not authenticated', e)
