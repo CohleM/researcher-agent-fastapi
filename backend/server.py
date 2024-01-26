@@ -35,7 +35,7 @@ from . import crud, models, schemas
 
 from .database import SessionLocal, engine
 
-from .routers import users, authentication, drafts, files
+from .routers import users, authentication, drafts, files, payments
 import sys
 
 # sys.path.append("/Users/cohlem/projects/FastAPI/")
@@ -64,6 +64,7 @@ app.include_router(users.router)
 app.include_router(authentication.router)
 app.include_router(drafts.router)
 app.include_router(files.router)
+app.include_router(payments.router)
 
 
 # Add this before defining your FastAPI app
@@ -275,7 +276,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
 
                 updated = crud.update_credits(current_user.email, credit_usage, db =  next(get_db()))
                 print(updated)
-                
+
             else:
                 await websocket.send_json({'authenticated' : 'no'})
 
