@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 # from . import crud, models, schemas
 from ..database import SessionLocal, engine
-
+from .authentication import get_current_user
 router = APIRouter(tags=["payments"])
 
 load_dotenv()
@@ -34,8 +34,9 @@ def get_db():
 
 
 
-@router.post('/create-checkout-session')
-async def create_checkout_session():
+@router.get('/create-checkout-session')
+async def create_checkout_session( current_user: Annotated[schemas.UserResponse, Depends(get_current_user)]):
+    
     print('checkout link hit')
     try:
         checkout_session = stripe.checkout.Session.create(
@@ -46,9 +47,9 @@ async def create_checkout_session():
                 },
             ],
             mode='subscription',
-            success_url=YOUR_DOMAIN + '?success=true',
-            cancel_url=YOUR_DOMAIN + '?canceled=true',
-            customer_email='manisrocker@gmail.com'
+            success_url= os.getenv('FRONTEND_URL') + '/editor',
+            cancel_url= os.getenv('FRONTEND_URL'),
+            customer_email= current_user.email
         )
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -73,7 +74,7 @@ async def webhook(request: Request):
         if event['type'] == 'checkout.session.completed':
             # Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
             session = stripe.checkout.Session.retrieve(
-            event['data']['object']['id'])
+            event['data']['object']['id'], expand=['line_items'])
 
             print('This is session', session)
             if session['payment_status'] == 'paid' and session['amount_total'] == 1400:

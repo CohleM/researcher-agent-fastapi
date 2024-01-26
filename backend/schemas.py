@@ -80,6 +80,11 @@ class UserResponse(UserBase):
 class User(UserBase):
     id: int
     drafts: list[DraftWithoutText] = []
+    credits : int
 
     class Config:
         orm_mode = True
+
+class Payment(BaseModel):
+    success_url : str
+    cancel_url : str
