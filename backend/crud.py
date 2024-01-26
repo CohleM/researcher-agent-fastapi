@@ -25,6 +25,17 @@ def create_user(db: Session, user: schemas.UserBase):
     return db_user
 
 
+# Create a new user by email
+def update_credits( user_email, credit_usage, db: Session):
+    user = db.query(models.User).filter(models.User.email == user_email).first()
+    user.credits = user.credits - credit_usage
+    db.commit()
+    db.refresh(user)
+
+    print('USER CREDIT', user.credits)
+    return {'credit_update' : 'done'}
+
+
 ##Items
 def get_items(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Item).offset(skip).limit(limit).all()

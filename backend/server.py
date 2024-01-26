@@ -252,15 +252,20 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
 
                 query = message['allAIOptions']['Text']
                 options = message['allAIOptions']
+                credit_usage = 0
                 stop_event.clear()
 
                 if options['AICommands'] == '1' and options['webSearch'] == True: # 1 belongs to generate report
                     result = Researcher(query,websocket).run_researcher_agent(stop_event)
+                    credit_usage = 10
                 elif options['AICommands'] == '2' and options['webSearch'] == True: # 2 belongs to generate QA
                     result = Researcher(query,websocket).run_qa_agent(stop_event)
+                    credit_usage = 5
                 elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
+                    credit_usage = 2 
                     result = Researcher(query,websocket).run_summarization_agent(stop_event)
                 elif options['AICommands'] == '4' and options['webSearch'] == False: # 4 belongs to generate Paraphrase
+                    credit_usage = 2 
                     result = Researcher(query,websocket).run_paraphrasing_agent(stop_event)
         
 
@@ -268,6 +273,9 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     # print(text, finish_reason)
                     await websocket.send_json({"content": text, "finish_reason": finish_reason, 'authenticated' : 'yes', 'error' : 'none'})
 
+                updated = crud.update_credits(current_user.email, credit_usage, db =  next(get_db()))
+                print(updated)
+                
             else:
                 await websocket.send_json({'authenticated' : 'no'})
 

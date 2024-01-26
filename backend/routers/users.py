@@ -27,3 +27,4 @@ def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
     if db_user:
         return db_user
     return crud.create_user(db=db, user=user)
+
