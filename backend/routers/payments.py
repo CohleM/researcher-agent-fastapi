@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 # from . import crud, models, schemas
 from ..database import SessionLocal, engine
 from .authentication import get_current_user
+
 router = APIRouter(tags=["payments"])
 
 load_dotenv()
@@ -58,10 +59,12 @@ async def create_checkout_session( current_user: Annotated[schemas.UserResponse,
 
 
 
+
+
 endpoint_secret = 'whsec_a4af083c3820a8a6ed69fcfa713d9ac56e5b4ca15dcb442f90dbfb252c75860d'
 
 @router.post('/webhook')
-async def webhook(request: Request):
+async def webhook(request: Request, db: Session = Depends(get_db)):
     try:
         payload = await request.body()
         sig_header = request.headers.get('stripe-signature')
@@ -79,7 +82,8 @@ async def webhook(request: Request):
             print('This is session', session)
             if session['payment_status'] == 'paid' and session['amount_total'] == 1400:
                 print('update the users credit')
-                pass
+                crud.add_subscription_credits(session['customer_email'], 1500, db)
+                
   # Handle the checkout.session.completed event
     except ValueError as e:
         raise HTTPException(status_code=400, detail=f'Invalid payload: {e}')

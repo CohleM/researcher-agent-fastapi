@@ -28,13 +28,22 @@ def create_user(db: Session, user: schemas.UserBase):
 # Create a new user by email
 def update_credits( user_email, credit_usage, db: Session):
     user = db.query(models.User).filter(models.User.email == user_email).first()
-    user.credits = user.credits - credit_usage
+    user.credits = user.credits + credit_usage
     db.commit()
     db.refresh(user)
 
     print('USER CREDIT', user.credits)
     return {'credit_update' : 'done'}
 
+# Create a new user by email
+def add_subscription_credits(user_email, credit_usage, db: Session):
+    user = db.query(models.User).filter(models.User.email == user_email).first()
+    user.credits =  credit_usage
+    db.commit()
+    db.refresh(user)
+
+    print('Subscription CREDIT added', user.credits)
+    return {'credit_update' : 'done'}
 
 ##Items
 def get_items(db: Session, skip: int = 0, limit: int = 100):

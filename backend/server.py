@@ -274,7 +274,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     # print(text, finish_reason)
                     await websocket.send_json({"content": text, "finish_reason": finish_reason, 'authenticated' : 'yes', 'error' : 'none'})
 
-                updated = crud.update_credits(current_user.email, credit_usage, db =  next(get_db()))
+                updated = crud.update_credits(current_user.email, (-credit_usage), db =  next(get_db()))
                 print(updated)
 
             else:
