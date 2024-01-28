@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from datetime import datetime, timedelta
 from . import models, schemas
 
 
@@ -39,6 +39,10 @@ def update_credits( user_email, credit_usage, db: Session):
 def add_subscription_credits(user_email, credit_usage, db: Session):
     user = db.query(models.User).filter(models.User.email == user_email).first()
     user.credits =  credit_usage
+    user.credits_expiration_date = datetime.utcnow() + timedelta(days=30)
+    
+    user.subscription = 'Premium'
+
     db.commit()
     db.refresh(user)
 

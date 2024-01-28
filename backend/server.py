@@ -239,11 +239,13 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
             current_user = await get_current_user_websocket(token, next(get_db()))
 
             if current_user:
+                current_datetime = datetime.utcnow()
 
-                if current_user.credits is None or current_user.credits < 10:
+                if current_user.credits is None or current_user.credits < 10 or current_user.credits_expiration_date < current_datetime:
                     print('Insufficient credit')
-                    await websocket.send_json({"error": "Insufficient credits", 'authenticated': 'yes'})
+                    await websocket.send_json({"error": "Insufficient credits or Credits have expired", 'authenticated': 'yes'})
                     continue  # Skip processing if credits are insufficient
+                
                 
                 print('User credits', current_user.credits)
                 print('use authenticated and processing request')
