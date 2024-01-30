@@ -90,3 +90,13 @@ def get_files_by_draft_id(db: Session, id: int):
 
 def get_file_by_id(db: Session, id: int):
     return db.query(models.File).filter(models.File.id == id).first()
+
+
+def update_each_file_toggle(db:Session, id:int, value: bool):
+    
+    file = db.query(models.File).filter(models.File.id ==  id).first()
+    file.toggle = value
+    db.commit()
+    db.refresh(file)
+
+    return file

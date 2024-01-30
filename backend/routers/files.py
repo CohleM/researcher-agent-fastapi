@@ -114,6 +114,20 @@ def delete_from_r2(filename):
 
     return True
 
+@router.post("/update-files-toggle", )
+def update_files_toggle(file_states: schemas.DynamicFileStates, current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db)):
+    print(file_states)
+
+    all_files = file_states.states
+
+    for item, value in all_files.items():
+        print('item', item, 'value', value)
+        file = crud.update_each_file_toggle(db,int(item), value)
+    
+    return {'done' : 'yes'}
+
+
 
 @router.get("/delete-file")
 def delete_file(
@@ -160,3 +174,4 @@ def download_file(
     link = get_download_link(f"uploads/{file.url}")
 
     return {"link": link}
+

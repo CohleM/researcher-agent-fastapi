@@ -89,3 +89,11 @@ class User(UserBase):
 class Payment(BaseModel):
     success_url : str
     cancel_url : str
+
+# class FileState(BaseModel):
+#     is_active: bool
+
+class DynamicFileStates(BaseModel):
+    """Schema for dynamic file states."""
+    states: dict[str, bool]
+
