@@ -1,58 +1,3 @@
-# # version: "3s"
-
-# # services:
-# #   web:
-# #     build: .
-# #     depends_on:
-# #       - db
-# #     volumes:
-# #       - ./:/code:ro
-# #     environment:
-# #       - SQLALCHEMY_DATABASE_URL=postgresql://cohlem69:mig33mig@db:5432/aiwriter
-# #     ports:
-# #       - "8000:80"
-# #   db:
-# #     image: postgres:16-alpine
-# #     volumes:
-# #       - new_postgres_data:/var/lib/postgresql/data/
-# #     environment:
-# #       - POSTGRES_USER=cohlem69
-# #       - POSTGRES_PASSWORD=mig33mig
-# #       - POSTGRES_DB=aiwriter
-# #     expose:
-# #       - 5432
-
-# # volumes:
-# #   new_postgres_data:
-
-# version: "3.8" # Specify Docker Compose file version
-
-# services:
-#   web: # Define the FastAPI application service
-#     build: . # Build the image from the current directory
-#     ports:
-#       - "8000:80" # Map port 8000 of the container to port 8000 on the host
-#     environment:
-#       - SQLALCHEMY_DATABASE_URL=postgresql://manish:Callm3honey@db:5432/aiwriter1 # Set environment variable for database connection
-#     depends_on:
-#       - db # Ensure the database is started first
-#     volumes:
-#       - .:/code # Mount the current directory to /app in the container
-
-#   db: # Define the PostgreSQL database service
-#     image: postgres:16 # Use the official PostgreSQL image
-#     environment:
-#       - POSTGRES_USER=manish # Set database user
-#       - POSTGRES_PASSWORD=Callm3honey # Set database password
-#       - POSTGRES_DB=aiwriter1 # Set database name
-#     expose:
-#       - 5432
-#     volumes:
-#       - new_postgres_data:/var/lib/postgresql/data/ # Persist database data
-
-# volumes:
-#   new_postgres_data: # Define a volume for PostgreSQL data
-
 version: "3.8" # Specify Docker Compose file version
 
 services:
@@ -87,26 +32,6 @@ services:
       - postgres_data_3:/var/lib/postgresql/data/ # Persist database data
     networks:
       - mynetwork
-
-  # backup:
-  #   image: ubuntu
-  #   volumes:
-  #     - new_postgres_data:/dbdata
-  #     - ./backup:/backup
-  #   command: ["bash", "-c", "tar cvf /backup/backup.tar /dbdata"]
-  #   networks:
-  #     - mynetwork
-
-  # restore:
-  #   image: ubuntu
-  #   volumes:
-  #     - new_postgres_data:/dbdata
-  #     - ./backup:/backup
-  #   command: ["bash", "-c", "tar xvf /backup/backup.tar -C /dbdata"]
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - mynetwork
 
 volumes:
   postgres_data_3: # Define a volume for PostgreSQL data

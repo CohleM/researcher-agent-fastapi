@@ -27,6 +27,7 @@ class File(FileBase):
     id: int
     draft_id: int
     last_updated: datetime
+    toggle: bool
 
     class Config:
         orm_mode = True

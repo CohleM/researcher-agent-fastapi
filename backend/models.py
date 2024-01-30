@@ -48,3 +48,4 @@ class File(Base):
     last_updated = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+    toggle = Column(Boolean, default=False)

@@ -95,121 +95,6 @@ def get_db():
         db.close()
 
 
-# with open("index.html") as f:
-#     html = f.read()
-
-
-# # to get a string like this run:
-# # openssl rand -hex 32
-# SECRET_KEY = "your-secret-key"  # Change this to a secure random key
-# ALGORITHM = "HS256"
-
-
-# fake_users_db = {
-#     "johndoe": {
-#         "username": "johndoe",
-#         "full_name": "John Doe",
-#         "email": "iamafanaticus@gmail.com",
-#         "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-#         "disabled": False,
-#     }
-# }
-
-
-# class User(BaseModel):
-#     email: str
-
-
-# def create_magic_link_token(data: dict):
-#     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
-
-
-# @app.get("/token/{token}")
-# def verify_magic_link_token(token: str):
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         return {"payload": payload, "message": "successfully loggedIn"}
-
-#     except JWTError:
-#         return {"payload": "not-found"}
-
-
-# @app.post("/magic-link/")
-# def send_magic_link(user: User):
-#     # Generate a unique token
-#     token = create_magic_link_token({"sub": user.email})
-
-#     # Send the token via email (replace with your email sending logic)
-#     send_email(
-#         user.email,
-#         "Log into OkProfessor",
-#         f"Click on this link to authenticate: http://127.0.0.1:8000/token/{token}",
-#     )
-#     return {"message": f"Magic link sent to your {user.email}"}
-
-
-# def send_email(to_email: str, subject: str, text_content: str):
-#     url = "https://api.brevo.com/v3/smtp/email"
-#     payload = json.dumps(
-#         {
-#             "sender": {"name": "Manish", "email": "manisrocker@gmail.com"},
-#             "to": [{"email": f"{to_email}"}],
-#             "subject": subject,
-#             "textContent": text_content,
-#         }
-#     )
-#     headers = {
-#         "accept": "application/json",
-#         "api-key": "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",
-#         "content-type": "application/json",
-#     }
-#     response = requests.request("POST", url, headers=headers, data=payload)
-#     print(response.text)
-
-
-## Websocket connection and streaming openai response
-async def get_ai_response(message: str) -> AsyncGenerator[str, None]:
-    """
-    OpenAI Response
-    """
-    response = await client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a helpful assistant, skilled in explaining "
-                    "complex concepts in simple terms."
-                ),
-            },
-            {
-                "role": "user",
-                "content": message,
-            },
-        ],
-        stream=True,
-    )
-
-    all_content = ""
-    async for chunk in response:
-        content = chunk.choices[0].delta.content
-        finish_reason = chunk.choices[0].finish_reason
-        # print("haha", content)
-        print(content)
-        # if content:
-        # all_content += content
-        if content:
-            all_content += content
-        yield all_content, finish_reason
-
-
-# @app.get("/")
-# async def web_app() -> HTMLResponse:
-#     """
-#     Web App
-#     """
-#     return HTMLResponse(html)
-
 
 @app.get("/stop-stream")
 async def stop_stream(current_user: Annotated[schemas.UserResponse, Depends(get_current_user)]):
@@ -245,7 +130,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     print('Insufficient credit')
                     await websocket.send_json({"error": "Insufficient credits or Credits have expired", 'authenticated': 'yes'})
                     continue  # Skip processing if credits are insufficient
-                
+
                 
                 print('User credits', current_user.credits)
                 print('use authenticated and processing request')
