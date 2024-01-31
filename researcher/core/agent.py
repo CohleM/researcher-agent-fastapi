@@ -10,17 +10,19 @@ from researcher.context.chunking import Chunking
 import logging
 from langsmith.run_helpers import traceable
 from researcher.search.custom import get_links_from_queries
-
+from backend.routers.files import get_file_from_r2
+import traceback
 
 class Researcher:
-    def __init__(self, query, websocket=None):
+    def __init__(self, query, websocket=None, files = None):
         self.query = query
         self.cfg = Config()
         self.agent = None
         self.role = None
         self.websocket = websocket
         self.visited_urls = set()
-        self.context = []
+        self.context = set()
+        self.files = files
 
     async def run_researcher_agent(self, stop_event):
         """
@@ -38,16 +40,29 @@ class Researcher:
             self.query
         ]
 
-        for each_query in sub_queries:
-            print(f"🔍 Searching web with query: {each_query}")
-            content = await self.get_content_using_query(each_query) # Getting the content by scraping urls
-            web_context = await self.get_similar_context(each_query, content)
+        # Commenting this for checking
+        # for each_query in sub_queries:
+        #     print(f"🔍 Searching web with query: {each_query}")
+        #     content = await self.get_content_using_query(each_query) # Getting the content by scraping urls
+        #     web_context = await self.get_similar_context(each_query, content)
+        #     self.context.add(web_context)
 
-            # # Add the files here
-            # file_content = await self.get_content_from_files()
-            # file_context = await self.get_similar_context() # or use vector db's hybrid searches
+        # Check if we have files
 
-            self.context.append(web_context)
+        try:
+            if len(self.files)>0:
+                print('FILES part executing')
+                retirever = await self.process_files() #process_files function returns retriever for all the enabled files.
+                for each_query in sub_queries:
+
+                    print('Adding documents for query ', each_query)
+                    each_query_context = retirever.get_context(each_query)
+                    for each_document in each_query_context:
+                        self.context.add(each_document) 
+        except Exception as e:
+            traceback.print_exc()
+            print('Error', e)
+            
 
         total_chunks = 0
         for chunk in self.context:
@@ -184,5 +199,49 @@ class Researcher:
             return []
 
 
-    async def get_content_from_files():
-        pass
+    async def process_files(self):
+        await stream_output(f"🔍 Searching your files...", websocket=self.websocket)
+        all_file_content =  await get_file_from_r2(self.files) #maybe through api req
+
+        chunks = []
+        chunking = Chunking(self.cfg.chunk_size, self.cfg.chunk_overlap)
+
+        # each_content has type {'page_content': 'something', "metadata": {
+    #   "source": "5031-Article Text-8094-1-10-20190709.pdf",
+    #   "file_path": "5031-Article Text-8094-1-10-20190709.pdf",
+    #   "page": 0,
+    #   "total_pages": 8,
+    #   "format": "PDF 1.5",
+    #   "title": "Get IT Scored Using AutoSAS!",
+    #   "author": "Yaman Kumar, Swati Aggarwal, Debanjan Mahata, Rajiv Ratn Shah, Ponnurangam Kumaraguru, Roger Zimmermann",
+    #   "subject": "",
+    #   "keywords": "",
+    #   "creator": "TeX",
+    #   "producer": "MiKTeX pdfTeX-1.40.17",
+    #   "creationDate": "D:20190630120825+05'30'",
+    #   "modDate": "D:20190630120825+05'30'",
+    #   "trapped": ""
+    # },}
+        for each_content in all_file_content:
+            chunks += chunking.run(
+                content=each_content.page_content,
+                metadatas={'source' : each_content.metadata['source'], 'page': each_content.metadata['page']},
+            )
+
+        # chunk where?
+        try:
+            hybrid_retriever = HybridRetriever(
+                chunks, max_results=self.cfg.max_chunks_per_query
+            )
+
+            return hybrid_retriever
+        except Exception as e:
+            print(
+                f"{Fore.RED} Error while getting content using query {e}{Style.RESET_ALL}"
+            )
+            return None 
+
+
+        
+
+        

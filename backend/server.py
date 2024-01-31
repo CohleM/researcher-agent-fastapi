@@ -94,6 +94,22 @@ def get_db():
     finally:
         db.close()
 
+def get_file_details(file_state):
+
+        enable_files = False
+        # Check if we need to search files
+        files_to_read = []
+        all_files = []
+        for item, value in file_state.items():
+            if value:
+                files_to_read.append(item)
+                enable_files = True
+
+
+        if enable_files:
+            all_files = crud.get_filenames_from_ids(files_to_read, next(get_db()))
+
+        return all_files 
 
 
 @app.get("/stop-stream")
@@ -117,18 +133,12 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
     while True:
         message = await websocket.receive_json() # message has type { 'text' : text, 'allAIOptions' : allAIOptions}
 
-        print('Thsii is message',message)
+        # print('Thsii is message',message)
         token = message['allAIOptions']['Token']
         file_state = message['allAIOptions']['FileState']
         file_state = dict(file_state)
-        enable_files = False
 
-        # Check if we need to search files
-        for item, value in file_state.items():
-            if value:
-                enable_files = True
-
-        
+        files = get_file_details(file_state) 
         
 
         try:
@@ -154,8 +164,9 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                 credit_usage = 0
                 stop_event.clear()
 
+
                 if options['AICommands'] == '1' and options['webSearch'] == True: # 1 belongs to generate report
-                    result = Researcher(query,websocket).run_researcher_agent(stop_event)
+                    result = Researcher(query,websocket, files=files).run_researcher_agent(stop_event)
                     credit_usage = 10
                 elif options['AICommands'] == '2' and options['webSearch'] == True: # 2 belongs to generate QA
                     result = Researcher(query,websocket).run_qa_agent(stop_event)

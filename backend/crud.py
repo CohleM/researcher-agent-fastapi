@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from . import models, schemas
-
+from fastapi import HTTPException
 
 ## Users
 def get_user(db: Session, user_id: int):
@@ -100,3 +100,13 @@ def update_each_file_toggle(db:Session, id:int, value: bool):
     db.refresh(file)
 
     return file
+
+def get_filenames_from_ids(file_ids: list[int], db : Session):
+
+    files_data = db.query(models.File).filter(models.File.id.in_(file_ids)).all()
+
+    if not files_data:
+        raise HTTPException(status_code=404, detail="Files not found")
+
+    result = [{"name": file_data.name, "url": file_data.url} for file_data in files_data]
+    return result
