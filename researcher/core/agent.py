@@ -40,9 +40,14 @@ class Researcher:
 
         for each_query in sub_queries:
             print(f"🔍 Searching web with query: {each_query}")
-            content = await self.get_content_using_query(each_query)
-            context = await self.get_similar_context(each_query, content)
-            self.context.append(context)
+            content = await self.get_content_using_query(each_query) # Getting the content by scraping urls
+            web_context = await self.get_similar_context(each_query, content)
+
+            # # Add the files here
+            # file_content = await self.get_content_from_files()
+            # file_context = await self.get_similar_context() # or use vector db's hybrid searches
+
+            self.context.append(web_context)
 
         total_chunks = 0
         for chunk in self.context:
@@ -122,7 +127,7 @@ class Researcher:
                 [query], max_links=self.cfg.max_search_results_per_query
             )
 
-            print("searhc_urls", search_urls)
+            print("search_urls", search_urls)
 
             new_search_urls = await self.get_unique_urls(
                 search_urls
@@ -177,3 +182,7 @@ class Researcher:
                 f"{Fore.RED} Error while getting content using query {e}{Style.RESET_ALL}"
             )
             return []
+
+
+    async def get_content_from_files():
+        pass

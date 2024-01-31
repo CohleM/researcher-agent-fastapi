@@ -119,6 +119,17 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
 
         print('Thsii is message',message)
         token = message['allAIOptions']['Token']
+        file_state = message['allAIOptions']['FileState']
+        file_state = dict(file_state)
+        enable_files = False
+
+        # Check if we need to search files
+        for item, value in file_state.items():
+            if value:
+                enable_files = True
+
+        
+        
 
         try:
             current_user = await get_current_user_websocket(token, next(get_db()))

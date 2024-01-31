@@ -15,9 +15,12 @@ import os
 import io
 import uuid
 
+import tempfile
+
+from langchain.document_loaders import PyMuPDFLoader
 load_dotenv()
 
-router = APIRouter(tags=["draft"])
+router = APIRouter(tags=["files"])
 # Create an S3 client
 s3 = boto3.client(
     service_name="s3",
@@ -48,6 +51,41 @@ def upload_to_s3(file_path, file_content):
         raise HTTPException(
             status_code=500, detail=f"Error uploading file to S3: {str(e)}"
         )
+
+
+@router.post('/get-files-from-r2')
+async def get_file_from_r2():
+    file_key = '8-10-b771aeab-6ed8-472e-b994-561e3808cfc1.pdf'
+    file_key = f"uploads/{file_key}"
+    try:
+        response = s3.get_object(Bucket=os.getenv("BUCKET_NAME"), Key=file_key)
+        file_content = response['Body'].read()
+
+        # Save the content to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_file.write(file_content)
+            temp_file_path = temp_file.name
+
+        # Use PyMuPDFLoader to load the temporary file
+        loader = PyMuPDFLoader(temp_file_path)
+        doc = loader.load()
+
+        # Close and delete the temporary file
+        os.remove(temp_file_path)
+        
+        print(doc)
+        return {"doc": doc}
+        
+    
+    except Exception as e:
+        print('Error, ', e)
+        # if e.response['Error']['Code'] == 'NoSuchKey':
+        #     raise HTTPException(status_code=404, detail="File not found")
+        # else:
+        #     raise HTTPException(status_code=500, detail="Internal server error")
+
+
+
 
 
 @router.post("/upload-file")
