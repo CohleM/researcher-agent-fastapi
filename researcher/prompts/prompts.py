@@ -29,7 +29,7 @@ def generate_paraphrase_prompt(original_text):
 
 
 def generate_qa_prompt(question, context):
-    print("yes using qa prompt")
+    print("yes using qa prompt for web")
     return (
         f'Relevant Information: """{context}"""\n\n'
         f"Using the above relevant information, answer the following"
@@ -43,7 +43,7 @@ def generate_qa_prompt(question, context):
         f"Assume that the current date is {datetime.now().strftime('%B %d, %Y')}"
     )
 def generate_qa_prompt_using_files_and_web(question, context):
-    print("yes using qa prompt")
+    print("yes using qa prompt for both")
     return (
         f'Relevant Information: """{context}"""\n\n'
         f"Using the above relevant information, answer the following"

@@ -73,7 +73,13 @@ async def generate_report(context, question, agent_role, cfg, stop_event):
         yield response
 
 
-async def generate_qa(context, question, cfg, stop_event):
+async def generate_qa(context, question, cfg, search_type, stop_event):
+    
+    if search_type == 'web':
+        prompt = generate_qa_prompt(question, context)
+    else:
+        prompt = generate_qa_prompt_using_files_and_web(question, context)
+
     response = ""
     try:
         print(f"using {cfg.total_words} words ")
@@ -85,7 +91,7 @@ async def generate_qa(context, question, cfg, stop_event):
                 },
                 {
                     "role": "user",
-                    "content": f"task: {generate_qa_prompt_using_files_and_web(question, context)}",
+                    "content": f"task: {prompt}",
                 },
             ],
             cfg=cfg,

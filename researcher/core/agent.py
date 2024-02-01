@@ -135,7 +135,7 @@ class Researcher:
         print("Generating Answers...")
         await stream_output(
             f"Generating Answer ...", websocket=self.websocket)
-        result = generate_qa(self.context, self.query, self.cfg, stop_event)
+        result = generate_qa(self.context, self.query, self.cfg, self.search_type, stop_event)
 
         async for text, finish_reason in result:
             yield text, finish_reason
