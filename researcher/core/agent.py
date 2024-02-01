@@ -31,8 +31,7 @@ class Researcher:
         Run the researcher
         """
 
-        await stream_output(
-            f"📘 Starting research for query: {self.query}", websocket=self.websocket)
+        
 
         self.agent, self.role = await choose_agent(self.query, self.cfg)
         await stream_output(f"Running {self.agent} ...", websocket=self.websocket)
@@ -95,18 +94,42 @@ class Researcher:
         """
         # print("Running QA agent")
 
-        print(f"🔍 Searching web with query: {self.query}")
+        print('STARTING QA')
         await stream_output(
             f"📘 Starting QA for query: {self.query}", websocket=self.websocket)
-        content = await self.get_content_using_query(self.query)
-        context = await self.get_similar_context(self.query, content)
-        self.context.append(context)
+        
+        if self.search_type == 'web' or self.search_type =='both':
+            print('WEB part executing FOR QA')
+            content = await self.get_content_using_query(self.query)
+            context = await self.get_similar_context(self.query, content)
+            self.context.append(context)
 
-        total_chunks = 0
-        for chunk in self.context:
-            total_chunks += len(chunk)
 
-        print(total_chunks)
+        try:
+            files_context= []
+            if self.search_type=='files' or self.search_type=='both':
+                print('FILES part executing FOR QA')
+                retirever = await self.process_files() #process_files function returns retriever for all the enabled files.
+
+
+                print('Adding documents for query ', self.query)
+                each_query_context = retirever.get_context(self.query)
+                for each_document in each_query_context:
+                    if each_document not in self.context:
+                        files_context.append(each_document)
+                        self.context.append(each_document)
+
+            print(files_context, 'len', len(files_context))
+
+
+        except Exception as e:
+            traceback.print_exc()
+            print('Error', e)
+        # total_chunks = 0
+        # for chunk in self.context:
+        #     total_chunks += len(chunk)
+
+        # print(total_chunks)
         # print(f"Total chunk count {total_chunks}")
 
         print("Generating Answers...")

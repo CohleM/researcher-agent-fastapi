@@ -85,7 +85,7 @@ async def generate_qa(context, question, cfg, stop_event):
                 },
                 {
                     "role": "user",
-                    "content": f"task: {generate_qa_prompt(question, context)}",
+                    "content": f"task: {generate_qa_prompt_using_files_and_web(question, context)}",
                 },
             ],
             cfg=cfg,

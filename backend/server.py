@@ -16,7 +16,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
+from researcher.utils.functions import stream_output
 from passlib.context import CryptContext
 from pydantic import BaseModel
 import requests
@@ -150,9 +150,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
             search_type = None
 
         print('Search Type', search_type)
-        
 
-        
 
         try:
             current_user = await get_current_user_websocket(token, next(get_db()))
@@ -164,12 +162,8 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     print('Insufficient credit')
                     await websocket.send_json({"error": "Insufficient credits or Credits have expired", 'authenticated': 'yes'})
                     continue  # Skip processing if credits are insufficient
-
-                
-                print('User credits', current_user.credits)
-                print('use authenticated and processing request')
                 # allAIOptions has type type AIOptionsType = { AICommands : string, webSearch : boolean }
-                print("message printing from backend", message['allAIOptions'])
+
 
 
                 query = message['allAIOptions']['Text']
@@ -179,10 +173,11 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
 
 
                 if options['AICommands'] == '1': # 1 belongs to generate report
+                    await stream_output(f"📘 Starting research for query: {query}", websocket=websocket)
                     result = Researcher(query, search_type, websocket, files=files).run_researcher_agent(stop_event)
                     credit_usage = 10
-                elif options['AICommands'] == '2' and options['webSearch'] == True: # 2 belongs to generate QA
-                    result = Researcher(query,websocket).run_qa_agent(stop_event)
+                elif options['AICommands'] == '2': # 2 belongs to generate QA
+                    result = Researcher(query,search_type, websocket, files=files).run_qa_agent(stop_event)
                     credit_usage = 5
                 elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
                     credit_usage = 2 

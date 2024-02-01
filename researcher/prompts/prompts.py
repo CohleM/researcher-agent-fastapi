@@ -42,7 +42,20 @@ def generate_qa_prompt(question, context):
         "ALWAYS return Inline SOURCES alongside the sentences if there are any and all the inline sources in the end."
         f"Assume that the current date is {datetime.now().strftime('%B %d, %Y')}"
     )
-
+def generate_qa_prompt_using_files_and_web(question, context):
+    print("yes using qa prompt")
+    return (
+        f'Relevant Information: """{context}"""\n\n'
+        f"Using the above relevant information, answer the following"
+        f' query or task: "{question}" in detail'
+        "Your answer should be short and simple, accurate, and to the point"
+        f"with facts and numbers if available."
+        "You must write the answer with markdown syntax.\n "
+        f"Use an unbiased and journalistic tone. \n"
+        f" Do NOT deter to general and meaningless conclusions. If you don't know the answer please say I couln't find the answer and don't try to make up your own answer.\n"
+        "ALWAYS return Inline SOURCES alongside the sentences if there are any and all the inline sources in the end. There will be two types of sources: one that contains URL and another that contains filenames. For sources containing URL cite them as normal url but for the sources containing filename cite them using their filename and page number in this format (filename, p. page number), just cite them as normal text. "
+        f"Assume that the current date is {datetime.now().strftime('%B %d, %Y')}"
+    )
 
 def generate_search_queries_prompt(question, max_iterations=3):
     """Generates the search queries prompt for the given question.
