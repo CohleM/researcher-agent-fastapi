@@ -41,16 +41,18 @@ class Researcher:
         ]
 
         # Commenting this for checking
-        # for each_query in sub_queries:
-        #     print(f"🔍 Searching web with query: {each_query}")
-        #     content = await self.get_content_using_query(each_query) # Getting the content by scraping urls
-        #     web_context = await self.get_similar_context(each_query, content)
-        #     self.context.add(web_context)
+        for each_query in sub_queries:
+            print(f"🔍 Searching web with query: {each_query}")
+            content = await self.get_content_using_query(each_query) # Getting the content by scraping urls
+            web_context = await self.get_similar_context(each_query, content)
+            self.context.append(web_context)
+
 
         # Check if we have files
 
 
         try:
+            files_context= []
             if len(self.files)>0:
                 print('FILES part executing')
                 retirever = await self.process_files() #process_files function returns retriever for all the enabled files.
@@ -60,7 +62,10 @@ class Researcher:
                     each_query_context = retirever.get_context(each_query)
                     for each_document in each_query_context:
                         if each_document not in self.context:
+                            files_context.append(each_document)
                             self.context.append(each_document)
+
+            print(files_context, 'len', len(files_context))
 
 
         except Exception as e:
@@ -229,7 +234,7 @@ class Researcher:
         for each_content in all_file_content:
             chunks += chunking.run(
                 content=each_content.page_content,
-                metadatas={'source' : each_content.metadata['source'], 'page': each_content.metadata['page']},
+                metadatas={'filename' : each_content.metadata['source'], 'page number': each_content.metadata['page']},
             )
 
         # chunk where?

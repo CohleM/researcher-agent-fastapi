@@ -83,6 +83,32 @@ def generate_report_prompt(question, context, report_format="APA", total_words=1
         f"Assume that the current date is {datetime.now().strftime('%B %d, %Y')}"
     )
 
+def generate_report_prompt_using_files_and_web(question, context, report_format="APA", total_words=1000):
+    """Generates the report prompt for the given question and research summary.
+    Args: question (str): The question to generate the report prompt for
+            research_summary (str): The research summary to generate the report prompt for
+    Returns: str: The report prompt for the given question and research summary
+    """
+
+    return (
+        f'Information: """{context}"""\n\n'
+        f"Using the above information, answer the following"
+        f' query or task: "{question}" in a detailed report --'
+        " The report should focus on the answer to the query, should be well structured, informative,"
+        f" in depth and comprehensive, with facts and numbers if available and a minimum of {total_words} words.\n"
+        "You should strive to write the report as long as you can using all relevant and necessary information provided.\n"
+        "You must write the report with markdown syntax.\n "
+        f"Use an unbiased and journalistic tone. \n"
+        "You MUST determine your own concrete and valid opinion based on the given information. Do NOT deter to general and meaningless conclusions.\n"
+        f"You MUST write all used source at the end of the report as references, and make sure to not add duplicated sources. There will be two types of sources: one that contains URL and another that contains filenames. For sources containing URL cite them as normal url but for the sources containing filename cite them using their filename and page number in this format (filename, p. page number), just cite them as normal text. \n"
+        f"You MUST write the report in {report_format} format.\n "
+        f"You MUST Cite search results using inline notations. Only cite the most \
+            relevant results that answer the query accurately. Place these citations at the end \
+            of the sentence or paragraph that reference them. \n"
+        f"Please do your best, this is very important to my career. "
+        f"Assume that the current date is {datetime.now().strftime('%B %d, %Y')}"
+    )
+
 
 def generate_report_prompt1(question, context, report_format="apa", total_words=3000):
     """Generates the report prompt for the given question and research summary.

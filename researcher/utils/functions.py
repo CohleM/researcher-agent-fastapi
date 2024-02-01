@@ -57,7 +57,8 @@ async def generate_report(context, question, agent_role, cfg, stop_event):
                 {"role": "system", "content": f"{agent_role}"},
                 {
                     "role": "user",
-                    "content": f"task: {generate_report_prompt(question, context, total_words = cfg.total_words)}",
+                    # "content": f"task: {generate_report_prompt(question, context, total_words = cfg.total_words)}",
+                    "content": f"task: {generate_report_prompt_using_files_and_web(question, context, total_words = cfg.total_words)}",
                 },
             ],
             cfg=cfg,
