@@ -76,7 +76,7 @@ def generate_report_prompt(question, context, report_format="APA", total_words=1
             research_summary (str): The research summary to generate the report prompt for
     Returns: str: The report prompt for the given question and research summary
     """
-
+    print('using web prompt')
     return (
         f'Information: """{context}"""\n\n'
         f"Using the above information, answer the following"
@@ -103,6 +103,7 @@ def generate_report_prompt_using_files_and_web(question, context, report_format=
     Returns: str: The report prompt for the given question and research summary
     """
 
+    print('using both prompt')
     return (
         f'Information: """{context}"""\n\n'
         f"Using the above information, answer the following"

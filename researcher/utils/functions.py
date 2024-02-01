@@ -47,7 +47,15 @@ async def choose_agent(query, cfg):
 
 
 @traceable(run_type="llm", name="report")
-async def generate_report(context, question, agent_role, cfg, stop_event):
+async def generate_report(context, question, agent_role, cfg, search_type, stop_event):
+    
+    
+    if search_type == 'web':
+        prompt = generate_report_prompt(question, context)
+    else:
+        prompt = generate_report_prompt_using_files_and_web(question, context)
+
+
     response = ""
     try:
         print(f"using {cfg.total_words} words ")
@@ -58,7 +66,7 @@ async def generate_report(context, question, agent_role, cfg, stop_event):
                 {
                     "role": "user",
                     # "content": f"task: {generate_report_prompt(question, context, total_words = cfg.total_words)}",
-                    "content": f"task: {generate_report_prompt_using_files_and_web(question, context, total_words = cfg.total_words)}",
+                    "content": f"task: {prompt}",
                 },
             ],
             cfg=cfg,
@@ -74,7 +82,7 @@ async def generate_report(context, question, agent_role, cfg, stop_event):
 
 
 async def generate_qa(context, question, cfg, search_type, stop_event):
-    
+
     if search_type == 'web':
         prompt = generate_qa_prompt(question, context)
     else:

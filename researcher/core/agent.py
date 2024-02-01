@@ -83,7 +83,7 @@ class Researcher:
         # print(f"Total chunk count {total_chunks}")
 
         await stream_output("✍🏻 Generating final Report...", websocket=self.websocket)
-        result = generate_report(self.context, self.query, self.role, self.cfg, stop_event)
+        result = generate_report(self.context, self.query, self.role, self.cfg, self.search_type, stop_event)
 
         async for text, finish_reason in result:
             yield text, finish_reason
