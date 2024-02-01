@@ -5,6 +5,7 @@ import os
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 # SQLALCHEMY_DATABASE_URL = "postgresql://manish:Callm3honey@db:5432/aiwriter1"
 
+# DATABASE_URL="postgresql://manish:Callm3honey@localhost:5432/aiwriter1"
 DATABASE_URL="postgresql://postgres:Bright#1270@db:5432/dockert"
 engine = create_engine(
     DATABASE_URL 

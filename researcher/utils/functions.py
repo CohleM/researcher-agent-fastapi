@@ -50,6 +50,7 @@ async def choose_agent(query, cfg):
 async def generate_report(context, question, agent_role, cfg, search_type, stop_event):
     
     
+
     if search_type == 'web':
         prompt = generate_report_prompt(question, context)
     else:

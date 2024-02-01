@@ -149,7 +149,6 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
         else:
             search_type = None
 
-        print('Search Type', search_type)
 
 
         try:
@@ -192,7 +191,6 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     await websocket.send_json({"content": text, "finish_reason": finish_reason, 'authenticated' : 'yes', 'error' : 'none'})
 
                 updated = crud.update_credits(current_user.email, (-credit_usage), db =  next(get_db()))
-                print(updated)
 
             else:
                 await websocket.send_json({'authenticated' : 'no'})

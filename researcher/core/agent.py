@@ -32,7 +32,10 @@ class Researcher:
         """
 
         
+        if(stop_event):
+            print('haha')
 
+        
         self.agent, self.role = await choose_agent(self.query, self.cfg)
         await stream_output(f"Running {self.agent} ...", websocket=self.websocket)
 
@@ -49,6 +52,7 @@ class Researcher:
                 content = await self.get_content_using_query(each_query) # Getting the content by scraping urls
                 web_context = await self.get_similar_context(each_query, content)
                 self.context.append(web_context)
+
 
 
         # Check if we have files
@@ -83,7 +87,7 @@ class Researcher:
         # print(f"Total chunk count {total_chunks}")
 
         await stream_output("✍🏻 Generating final Report...", websocket=self.websocket)
-        result = generate_report(self.context, self.query, self.role, self.cfg, self.search_type, stop_event)
+        result = generate_report(self.context, self.query, self.role, self.cfg,self.search_type, stop_event)
 
         async for text, finish_reason in result:
             yield text, finish_reason
@@ -94,23 +98,22 @@ class Researcher:
         """
         # print("Running QA agent")
 
-        print('STARTING QA')
+        print('STARTING QA...')
+
         await stream_output(
             f"📘 Starting QA for query: {self.query}", websocket=self.websocket)
         
         if self.search_type == 'web' or self.search_type =='both':
-            print('WEB part executing FOR QA')
             content = await self.get_content_using_query(self.query)
             context = await self.get_similar_context(self.query, content)
             self.context.append(context)
-
+        
 
         try:
             files_context= []
             if self.search_type=='files' or self.search_type=='both':
                 print('FILES part executing FOR QA')
                 retirever = await self.process_files() #process_files function returns retriever for all the enabled files.
-
 
                 print('Adding documents for query ', self.query)
                 each_query_context = retirever.get_context(self.query)
@@ -120,6 +123,7 @@ class Researcher:
                         self.context.append(each_document)
 
             print(files_context, 'len', len(files_context))
+
 
 
         except Exception as e:
@@ -236,6 +240,7 @@ class Researcher:
 
 
     async def process_files(self):
+        print('Searching files .... \n')
         await stream_output(f"🔍 Searching your files...", websocket=self.websocket)
         all_file_content =  await get_file_from_r2(self.files) #maybe through api req
 
