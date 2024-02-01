@@ -21,7 +21,7 @@ class Researcher:
         self.role = None
         self.websocket = websocket
         self.visited_urls = set()
-        self.context = set()
+        self.context = [] 
         self.files = files
 
     async def run_researcher_agent(self, stop_event):
@@ -49,6 +49,7 @@ class Researcher:
 
         # Check if we have files
 
+
         try:
             if len(self.files)>0:
                 print('FILES part executing')
@@ -58,17 +59,20 @@ class Researcher:
                     print('Adding documents for query ', each_query)
                     each_query_context = retirever.get_context(each_query)
                     for each_document in each_query_context:
-                        self.context.add(each_document) 
+                        if each_document not in self.context:
+                            self.context.append(each_document)
+
+
         except Exception as e:
             traceback.print_exc()
             print('Error', e)
             
 
-        total_chunks = 0
-        for chunk in self.context:
-            total_chunks += len(chunk)
+        # total_chunks = 0
+        # for chunk in self.context:
+        #     total_chunks += len(chunk)
 
-        print(f"Total chunk count {total_chunks}")
+        # print(f"Total chunk count {total_chunks}")
 
         await stream_output("✍🏻 Generating final Report...", websocket=self.websocket)
         result = generate_report(self.context, self.query, self.role, self.cfg, stop_event)

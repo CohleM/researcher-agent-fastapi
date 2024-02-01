@@ -34,7 +34,7 @@ async def get_ai_response(stop_event, messages: str, cfg) -> AsyncGenerator[str,
             content = chunk.choices[0].delta.content
             finish_reason = chunk.choices[0].finish_reason
             # print("haha", content)
-            print(content)
+            # print(content)
             # if content:
             # all_content += content
             if content:
