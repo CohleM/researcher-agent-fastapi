@@ -14,7 +14,7 @@ from backend.routers.files import get_file_from_r2
 import traceback
 
 class Researcher:
-    def __init__(self, query, websocket=None, files = None):
+    def __init__(self, query, search_type, websocket=None, files = None):
         self.query = query
         self.cfg = Config()
         self.agent = None
@@ -22,7 +22,9 @@ class Researcher:
         self.websocket = websocket
         self.visited_urls = set()
         self.context = [] 
+        self.search_type = search_type
         self.files = files
+
 
     async def run_researcher_agent(self, stop_event):
         """
@@ -41,11 +43,13 @@ class Researcher:
         ]
 
         # Commenting this for checking
-        for each_query in sub_queries:
-            print(f"🔍 Searching web with query: {each_query}")
-            content = await self.get_content_using_query(each_query) # Getting the content by scraping urls
-            web_context = await self.get_similar_context(each_query, content)
-            self.context.append(web_context)
+        if self.search_type == 'web' or self.search_type =='both':
+
+            for each_query in sub_queries:
+                print(f"🔍 Searching web with query: {each_query}")
+                content = await self.get_content_using_query(each_query) # Getting the content by scraping urls
+                web_context = await self.get_similar_context(each_query, content)
+                self.context.append(web_context)
 
 
         # Check if we have files
@@ -53,7 +57,7 @@ class Researcher:
 
         try:
             files_context= []
-            if len(self.files)>0:
+            if self.search_type=='files' or self.search_type=='both':
                 print('FILES part executing')
                 retirever = await self.process_files() #process_files function returns retriever for all the enabled files.
                 for each_query in sub_queries:

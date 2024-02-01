@@ -138,7 +138,20 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
         file_state = message['allAIOptions']['FileState']
         file_state = dict(file_state)
 
-        files = get_file_details(file_state) 
+        files = get_file_details(file_state)
+        search_type = 'web'
+        if (len(files) > 0 and message['allAIOptions']['webSearch']==True):
+            search_type = 'both'
+        elif (len(files) == 0 and message['allAIOptions']['webSearch']==True):
+            search_type= 'web'
+        elif (len(files) > 0 and message['allAIOptions']['webSearch']==False):
+            search_type = 'files'
+        else:
+            search_type = None
+
+        print('Search Type', search_type)
+        
+
         
 
         try:
@@ -165,8 +178,8 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                 stop_event.clear()
 
 
-                if options['AICommands'] == '1' and options['webSearch'] == True: # 1 belongs to generate report
-                    result = Researcher(query,websocket, files=files).run_researcher_agent(stop_event)
+                if options['AICommands'] == '1': # 1 belongs to generate report
+                    result = Researcher(query, search_type, websocket, files=files).run_researcher_agent(stop_event)
                     credit_usage = 10
                 elif options['AICommands'] == '2' and options['webSearch'] == True: # 2 belongs to generate QA
                     result = Researcher(query,websocket).run_qa_agent(stop_event)
