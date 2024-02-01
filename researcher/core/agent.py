@@ -32,9 +32,6 @@ class Researcher:
         """
 
         
-        if(stop_event):
-            print('haha')
-
         
         self.agent, self.role = await choose_agent(self.query, self.cfg)
         await stream_output(f"Running {self.agent} ...", websocket=self.websocket)

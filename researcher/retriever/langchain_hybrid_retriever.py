@@ -5,7 +5,7 @@ from langchain.embeddings import OpenAIEmbeddings
 
 
 class HybridRetriever:
-    def __init__(self, documents, embeddings=OpenAIEmbeddings(), max_results=5):
+    def __init__(self, documents, embeddings=OpenAIEmbeddings(model='text-embedding-3-small'), max_results=5):
 
         self.documents = documents
         self.embeddings = embeddings
@@ -18,7 +18,7 @@ class HybridRetriever:
         bm25_retriever = BM25Retriever.from_documents(self.documents)
         bm25_retriever.k = self.max_results
 
-        embedding = OpenAIEmbeddings()
+        # embedding = OpenAIEmbeddings()
         faiss_vectorstore = FAISS.from_documents(self.documents, self.embeddings)
         faiss_retriever = faiss_vectorstore.as_retriever(search_kwargs={"k": self.max_results })
 
