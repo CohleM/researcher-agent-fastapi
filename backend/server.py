@@ -180,10 +180,10 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     credit_usage = 5
                 elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
                     credit_usage = 2 
-                    result = Researcher(query,websocket).run_summarization_agent(stop_event)
+                    result = Researcher(query,search_type, websocket).run_summarization_agent(stop_event)
                 elif options['AICommands'] == '4' and options['webSearch'] == False: # 4 belongs to generate Paraphrase
                     credit_usage = 2 
-                    result = Researcher(query,websocket).run_paraphrasing_agent(stop_event)
+                    result = Researcher(query,search_type,websocket).run_paraphrasing_agent(stop_event)
         
 
                 async for text, finish_reason in result:

@@ -97,14 +97,29 @@ def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
 @router.post("/magic-link")
 def send_magic_link(user: schemas.UserBase):
     # Generate a unique token
-    token = create_token({"sub": user.email})
+    token = create_token({"sub": user.email}, expires_delta=timedelta(minutes=30))
 
     # Send the token via email (replace with your email sending logic)
     ## http://localhost:3000/authentication?token={token}
     send_email(
         user.email,
-        "Log into OkProfessor",
-        f"Click on this link to authenticate: {os.getenv('FRONTEND_URL')}/authentication?token={token}",
+        "Sign in to Okprofessor",
+        f"""
+        Hello <br><br>We received a request to sign in to Okprofessor using this email address.<br>
+
+        If you want to sign in, click the below link: <br><br>
+
+        <a href='{os.getenv('FRONTEND_URL')}/authentication?token={token}'>Log in to Okprofessor</a><br><br>
+
+        The link will expire in 30 minutes. If it expires, you can request a new link again.<br><br>
+
+        If you did not request this link, you can safely ignore this email.<br><br><br>
+
+        Thanks,<br><br>
+
+        Team Okprofessor
+
+        """,
     )
     return {"message": f"Sent the verification email to {user.email}"}
 
@@ -113,10 +128,10 @@ def send_email(to_email: str, subject: str, text_content: str):
     url = "https://api.brevo.com/v3/smtp/email"
     payload = json.dumps(
         {
-            "sender": {"name": "Manish", "email": "manisrocker@gmail.com"},
+            "sender": {"name": "login@okpofessor.com", "email": "no-reply@okprofessor.com"},
             "to": [{"email": f"{to_email}"}],
             "subject": subject,
-            "textContent": text_content,
+            "htmlContent": text_content,
         }
     )
     headers = {

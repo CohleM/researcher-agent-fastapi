@@ -3,7 +3,8 @@ class Config:
 
         self.retriever = "Weaviate"
         self.search_engine = "duckduckgo"
-        self.llm = "gpt-3.5-turbo-1106"
+        # self.llm = "gpt-3.5-turbo-1106"
+        self.llm = "gpt-3.5-turbo-0125" # Cheaper model
         self.max_search_query = 3
         self.max_search_results_per_query = 3 
         self.max_chunks_per_query = 3 
