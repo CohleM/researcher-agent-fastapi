@@ -101,7 +101,7 @@ def send_magic_link(user: schemas.UserBase):
 
     # Send the token via email (replace with your email sending logic)
     ## http://localhost:3000/authentication?token={token}
-    send_email(
+    response = send_email(
         user.email,
         "Sign in to Okprofessor",
         f"""
@@ -121,7 +121,15 @@ def send_magic_link(user: schemas.UserBase):
 
         """,
     )
-    return {"message": f"Sent the verification email to {user.email}"}
+
+    print('RESPONSE of sending email', response)
+    print('RESPONSE of sending email', response.content)
+    print('RESPONSE of sending email', response.status_code)
+
+    if response.status_code >= 400 and response.status_code < 500:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Couldnt send requests")
+
+    return {"message": f"Verification email sent to {user.email}. If you can't find the mail in your inbox, please check your spam section."}
 
 
 def send_email(to_email: str, subject: str, text_content: str):
@@ -141,6 +149,8 @@ def send_email(to_email: str, subject: str, text_content: str):
     }
     response = magic_link_request.request("POST", url, headers=headers, data=payload)
     print(response.text)
+
+    return response
 
 
 async def get_current_user(
