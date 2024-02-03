@@ -20,7 +20,7 @@ import os
 
 
 # This is your test secret API key.
-stripe.api_key = 'sk_test_51OcQWVJoX2YM2SnlGBFCn2meYkt4uyxbiGZYGtfRgkQmVYeKmstBfi9QkJ21f6f4ixSgiE2tQ9vDpAqUO7ZihbmU00iTE4eHn2'
+stripe.api_key = os.getenv('STRIPE_API_KEY')
 
 YOUR_DOMAIN = os.getenv('FRONTEND_URL')
 
@@ -41,9 +41,11 @@ async def create_checkout_session( current_user: Annotated[schemas.UserResponse,
     print('checkout link hit')
     try:
         checkout_session = stripe.checkout.Session.create(
+
+
             line_items=[
                 {
-                    'price': 'price_1OcitZJoX2YM2SnlMYxZWDcE',
+                    'price': os.getenv('STRIPE_PROD'),
                     'quantity': 1,
                 },
             ],
@@ -83,6 +85,9 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
             if session['payment_status'] == 'paid' and session['amount_total'] == 1400:
                 print('update the users credit')
                 crud.add_subscription_credits(session['customer_email'], 1500, db)
+            elif session['payment_status'] == 'paid' and session['amount_total'] == 52:
+                print('update the users credit')
+                crud.add_subscription_credits(session['customer_email'], 900, db)
                 
   # Handle the checkout.session.completed event
     except ValueError as e:

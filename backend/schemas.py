@@ -82,6 +82,7 @@ class User(UserBase):
     id: int
     drafts: list[DraftWithoutText] = []
     credits : int
+    subscription : str
 
     class Config:
         orm_mode = True

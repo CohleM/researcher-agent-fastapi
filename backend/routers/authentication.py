@@ -136,7 +136,7 @@ def send_email(to_email: str, subject: str, text_content: str):
     url = "https://api.brevo.com/v3/smtp/email"
     payload = json.dumps(
         {
-            "sender": {"name": "login@okpofessor.com", "email": "no-reply@okprofessor.com"},
+            "sender": {"name": "login@okprofessor.com", "email": "no-reply@okprofessor.com"},
             "to": [{"email": f"{to_email}"}],
             "subject": subject,
             "htmlContent": text_content,
