@@ -78,6 +78,7 @@ class UserResponse(UserBase):
         orm_mode = True
 
 
+
 class User(UserBase):
     id: int
     drafts: list[DraftWithoutText] = []

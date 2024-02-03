@@ -222,6 +222,7 @@ async def get_current_user_websocket(
 
 
 
+
 @router.get("/userinfo", response_model=schemas.User)
 async def get_user_info(
     current_user: Annotated[schemas.UserResponse, Depends(get_current_user)]
