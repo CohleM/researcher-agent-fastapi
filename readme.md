@@ -62,3 +62,19 @@ server_name backend.okprofessor.com;
     return 301 https://$host$request_uri;
 
 }
+
+## NOTE
+
+nginx by default doesn't allow request body's payload to be large so make changes to nginx config to allow large files.
+
+Edit the conf file of nginx:
+
+nano /etc/nginx/nginx.conf
+Add a line in the http, server or location section:
+
+client_max_body_size 100M;
+Don't use MB it will not work, only the M!
+
+Also do not forget to restart nginx:
+
+systemctl restart nginx

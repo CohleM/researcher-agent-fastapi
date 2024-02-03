@@ -63,7 +63,7 @@ async def create_checkout_session( current_user: Annotated[schemas.UserResponse,
 
 
 
-endpoint_secret = 'whsec_a4af083c3820a8a6ed69fcfa713d9ac56e5b4ca15dcb442f90dbfb252c75860d'
+endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
 
 @router.post('/webhook')
 async def webhook(request: Request, db: Session = Depends(get_db)):
