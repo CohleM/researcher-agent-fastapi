@@ -79,7 +79,7 @@ def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
         user = create_user(schemas.UserBase(email=email), db)
         # return {"isValid": "true", "message": "Magic link verified successfully"}
         access_token = create_token(
-            {"sub": user.email}, expires_delta=timedelta(minutes=120)
+            {"sub": user.email}, expires_delta=timedelta(hours=24)
         )
         return {"access_token": access_token, "token_type": "bearer"}
 
@@ -269,7 +269,7 @@ def authentication(request: Request,token:str, db: Session = Depends(get_db)):
         user = create_user(schemas.UserBase(email=email), db)
         # return {"isValid": "true", "message": "Magic link verified successfully"}
         access_token = create_token(
-            {"sub": user.email}, expires_delta=timedelta(minutes=120)
+            {"sub": user.email}, expires_delta=timedelta(hours=24)
         )
         print(' Google login this is executed')
         return {"access_token": access_token, "token_type": "bearer"}
