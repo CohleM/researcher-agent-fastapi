@@ -84,7 +84,7 @@ def verify_magic_link_token(token: str, db: Session = Depends(get_db)):
         return {"access_token": access_token, "token_type": "bearer"}
 
     except Exception as e:
-        print("causethis exception")
+        print("causethis exception", e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired",

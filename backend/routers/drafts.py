@@ -31,6 +31,24 @@ def create_new_draft(
     draft = crud.create_draft(db, current_user)
     return draft
 
+@router.post("/create-draft-with-content", response_model=schemas.Draft)
+def create_new_draft_with_content(
+    new_draft: schemas.DraftBase,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    print("create-new-draft-with-content", current_user)
+    draft = crud.create_draft(db, current_user)
+
+    if draft:
+        draft.name = new_draft.name
+        draft.text = new_draft.text
+        db.commit()
+        db.refresh(draft)
+        return draft
+
+    raise HTTPException(status_code=404, detail="could not create a new draft with content")
+
 
 @router.get("/draft", response_model=schemas.Draft)
 def get_draft(
