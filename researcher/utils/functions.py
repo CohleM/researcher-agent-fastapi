@@ -195,7 +195,10 @@ async def notes_from_youtube(link, cfg):
     try:
         tasks = [generate_youtube_notes(transcript, cfg) for transcript in combined_transcript]
         response = await asyncio.gather(*tasks)
-        return response
+        combined_results = ''
+        for i in response:
+            combined_results += i + '\n\n'
+        return combined_results, combined_transcript
 
     except Exception as e:
         print(
