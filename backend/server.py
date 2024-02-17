@@ -190,7 +190,10 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     link = options['Link']
                     yt_notes = await notes_from_youtube(link,cfg = Config())
                     print('\n\n YT notes', yt_notes)
-                    await websocket.send_json({"content": yt_notes, "finish_reason": "stop", 'authenticated' : 'yes', 'error' : 'none'})
+                    combined_results = ''
+                    for i in yt_notes:
+                        combined_results += i + '\n\n'
+                    await websocket.send_json({"content": combined_results, "finish_reason": "stop", 'authenticated' : 'yes', 'error' : 'none'})
                     continue 
 
                 async for text, finish_reason in result:
