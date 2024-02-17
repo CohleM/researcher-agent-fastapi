@@ -1,6 +1,6 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
-
+import traceback
 # from websocket_manager import WebSocketManager
 from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,7 +16,8 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from researcher.utils.functions import stream_output
+from researcher.utils.functions import stream_output, notes_from_youtube
+from researcher.config import Config
 from passlib.context import CryptContext
 from pydantic import BaseModel
 import requests
@@ -184,7 +185,13 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                 elif options['AICommands'] == '4' and options['webSearch'] == False: # 4 belongs to generate Paraphrase
                     credit_usage = 2 
                     result = Researcher(query,search_type,websocket).run_paraphrasing_agent(stop_event)
-        
+                elif options['AICommands'] == '5':
+                    print('Starting YT notes')
+                    link = options['Link']
+                    yt_notes = await notes_from_youtube(link,cfg = Config())
+                    print('\n\n YT notes', yt_notes)
+                    await websocket.send_json({"content": yt_notes, "finish_reason": "stop", 'authenticated' : 'yes', 'error' : 'none'})
+                    continue 
 
                 async for text, finish_reason in result:
                     # print(text, finish_reason)
@@ -196,7 +203,8 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                 await websocket.send_json({'authenticated' : 'no'})
 
         except Exception as e:
-            print('The user was not authenticated', e)
+            print('Error occured', e)
+            traceback.print_exc()
             await websocket.send_json({'authenticated' : 'no'})
 
 

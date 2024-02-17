@@ -3,6 +3,8 @@ import logging
 from langsmith.run_helpers import traceable
 from typing import AsyncGenerator, NoReturn
 import os
+from researcher.prompts.prompts import youtube_notes_prompt
+
 # logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
 
@@ -63,3 +65,16 @@ async def create_chat_completion(messages, cfg, stream=False):
         print(f"Token Usage: {chat_completion.usage}")
 
         return chat_completion.choices[0].message.content
+
+
+
+
+async def generate_youtube_notes(transcript, cfg):
+
+    messages = [
+        {"role": "system", "content": "You are a youtube assistant that assists students in explaining topics from a youtube transcript."},
+        {"role": "user", "content": youtube_notes_prompt(transcript)},
+    ]
+    client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+    chat_completion =  await client.chat.completions.create(messages=messages, model=cfg.llm)
+    return chat_completion.choices[0].message.content

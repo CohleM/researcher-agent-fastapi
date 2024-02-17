@@ -1,9 +1,11 @@
 import json
 from colorama import Fore, Style
-
+import asyncio
 from .llm import *
 from researcher.prompts.prompts import *
 from langsmith.run_helpers import traceable
+from .youtube_transcript import _parse_video_id, combine_transcript
+from youtube_transcript_api import YouTubeTranscriptApi
 
 
 async def get_sub_queries(query, role, cfg):
@@ -23,6 +25,9 @@ async def get_sub_queries(query, role, cfg):
             f"{Fore.RED} Error while generating multiple queries {e}{Style.RESET_ALL}"
         )
         return []
+    
+
+
 
 
 async def choose_agent(query, cfg):
@@ -174,3 +179,26 @@ async def generate_paraphrase(original_text, cfg, stop_event):
 async def stream_output(message, websocket):
     if websocket:
         await websocket.send_json({"content": message, "type": "log"})
+
+
+
+## Summarized notes from youtube
+async def notes_from_youtube(link, cfg):
+    # Get the video id from link
+    video_id = _parse_video_id(link)
+    # Generate transcript from link
+    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    # Combine the transcript 
+    combined_transcript = combine_transcript(transcript)
+    
+    #Generate
+    try:
+        tasks = [generate_youtube_notes(transcript, cfg) for transcript in combined_transcript]
+        response = await asyncio.gather(*tasks)
+        return response
+
+    except Exception as e:
+        print(
+            f"{Fore.RED} Error while generating multiple queries {e}{Style.RESET_ALL}"
+        )
+        return []

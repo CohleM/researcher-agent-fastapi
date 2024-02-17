@@ -108,4 +108,5 @@ weasyprint==60.2
 webencodings==0.5.1
 websockets==12.0
 yarl==1.9.4
+youtube-transcript-api==0.6.2
 zopfli==0.2.3
