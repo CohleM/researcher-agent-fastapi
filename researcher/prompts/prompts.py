@@ -270,3 +270,60 @@ def generate_summary_prompt(query, data):
         f"query cannot be answered using the text, YOU MUST summarize the text in short.\n Include all factual "
         f"information such as numbers, stats, quotes, etc if available. "
     )
+
+
+
+
+## YOUTUBE
+
+async def generate_notes(transcript):
+    user_message = f""" TRANSCRIPT: {combined_transcript[0]['text']}.
+
+    You need to perform these tasks step by step.
+
+    1. Read all the transcript provided above.
+    2. Generate the important titles, and for each title, you must describe them in bullet points.
+
+
+    IMPORTANT POINT TO CONSIDER
+    1. Your response should be well structured, informative, in depth and comprehensive, with facts and numbers if available.
+    2. You should strive to write the as long as you can using all relevant and necessary information provided.
+    3. DONOT include conslusion in your response.
+    4. Please give your response in markdown syntax
+    5. Please do your best, this is very important to my career. 
+    6. DONOT include any other text in your response besides what's described above.
+    7. DONOT generate Numbered titles.
+
+    Your response format should be in this format:
+
+    ## Title 1
+    - Explanation 1
+    - Explanation 2
+
+    ## Title 2
+    - Explanation 1
+    - Explanation 2
+
+
+
+
+    Please do your best, this is very important to my career. 
+    """
+
+
+    messages = [
+        {"role": "system", "content": "You are a youtube assistant that assists students in explaining topics from a youtube transcript."},
+        {"role": "user", "content": user_message},
+    ]
+    chat_completion =  client.chat.completions.create(messages=messages, model='gpt-3.5-turbo-0125')
+    return chat_completion.choices[0].message.content
+
+async def generate_all():
+    tasks = [generate_notes(transcript) for transcript in combined_transcript]
+    results = await asyncio.gather(*tasks)
+    return results
+
+# Run the main function
+# final_notes = asyncio.run(main())
+
+results = await generate_all()
