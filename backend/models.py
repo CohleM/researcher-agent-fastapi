@@ -17,7 +17,8 @@ class User(Base):
     credits_expiration_date = Column(DateTime, server_default=func.now() + timedelta(days=30))
 
     drafts = relationship("Draft", back_populates="owner")
-    
+    random = Column(String, default='gg')
+    files = relationship("File", back_populates="corresponding_user")
     
 
 
@@ -33,7 +34,7 @@ class Draft(Base):
     last_updated = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    files = relationship("File", back_populates="corresponding_draft")
+    # files = relationship("File", back_populates="corresponding_draft")
     # add another relationship
 
 
@@ -43,9 +44,13 @@ class File(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(Text, index=True)
     url = Column(Text)
-    draft_id = Column(Integer, ForeignKey("drafts.id"))
-    corresponding_draft = relationship("Draft", back_populates="files")
+    # draft_id = Column(Integer, ForeignKey("drafts.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+    # corresponding_draft = relationship("Draft", back_populates="files")
+    corresponding_user = relationship("User", back_populates="files")
     last_updated = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    toggle = Column(Boolean, default=False)
+    # toggle = Column(Boolean, default=False)
+    

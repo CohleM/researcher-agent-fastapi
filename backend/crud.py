@@ -76,8 +76,8 @@ def get_draft_by_id(db: Session, id: int):
 #     db.commit()
 #     db.refresh(db_item)
 #     return db_item
-def save_file(db: Session, name: str, url: str, draft_id: int):
-    file = models.File(name=name, url=url, draft_id=draft_id)
+def save_file(db: Session, name: str, url: str, user_id: int):
+    file = models.File(name=name, url=url , user_id=user_id)
     db.add(file)
     db.commit()
     db.refresh(file)

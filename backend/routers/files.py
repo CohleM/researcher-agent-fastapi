@@ -100,17 +100,15 @@ async def get_file_from_r2(files):
 
 @router.post("/upload-file")
 async def upload_file(
-    draft_id: int,
     current_user: Annotated[schemas.User, Depends(get_current_user)],
     db: Session = Depends(get_db),
     file: UploadFile = File(...),
 ):  # let's take nothing from the response body for now
-    print("draft id gg ", draft_id)
     user_id = current_user.id
 
     # modified filename
     original_filename = file.filename
-    filename = f"{user_id}-{draft_id}-{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    filename = f"{user_id}-{uuid.uuid4()}.{file.filename.split('.')[-1]}"
     print(filename)
     # Read the files
     file = await file.read()
@@ -129,7 +127,7 @@ async def upload_file(
 
     ## save the data to the database.
     if success:
-        saved_file = crud.save_file(db, original_filename, filename, draft_id)
+        saved_file = crud.save_file(db, original_filename, filename, user_id)
         return {
             "message": "File uploaded successfully to S3",
             "s3_key": s3_file_path,

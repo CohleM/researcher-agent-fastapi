@@ -225,7 +225,7 @@ async def get_current_user_websocket(
 async def get_user_info(
     current_user: Annotated[schemas.UserResponse, Depends(get_current_user)]
 ):
-    print("yooo")
+    print("CHECKING >>>>>>")
     if current_user:
         print(current_user)
         return current_user

@@ -25,9 +25,9 @@ class FileBase(BaseModel):
 
 class File(FileBase):
     id: int
-    draft_id: int
+    # draft_id: int
     last_updated: datetime
-    toggle: bool
+    # toggle: bool
 
     class Config:
         orm_mode = True
@@ -84,6 +84,7 @@ class User(UserBase):
     drafts: list[DraftWithoutText] = []
     credits : int
     subscription : str
+    files : list[File] = []
 
     class Config:
         orm_mode = True
