@@ -57,6 +57,20 @@ def generate_qa_prompt_using_files_and_web(question, context):
         f"Assume that the current date is {datetime.now().strftime('%B %d, %Y')}"
     )
 
+def generate_qa_prompt_text_only(question, context):
+    print("Using prompt for text ONLY ")
+    return (
+        f'Relevant Information: """{context}"""\n\n'
+        f"Using the above relevant information, answer the following"
+        f' query or task: "{question}" in detail'
+        "Your answer should be short and simple, accurate, and to the point"
+        f"with facts and numbers if available."
+        "You must write the answer with markdown syntax.\n "
+        f"Use an unbiased and journalistic tone. \n"
+        f" Do NOT deter to general and meaningless conclusions. If you don't know the answer please say I couln't find the answer and don't try to make up your own answer.\n"
+       
+    )
+
 def generate_search_queries_prompt(question, max_iterations=3):
     """Generates the search queries prompt for the given question.
     Args: question (str): The question to generate the search queries prompt for

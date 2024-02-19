@@ -91,6 +91,9 @@ async def generate_qa(context, question, cfg, search_type, stop_event):
 
     if search_type == 'web':
         prompt = generate_qa_prompt(question, context)
+    elif search_type == None:
+        print('YOOOOO')
+        prompt = generate_qa_prompt_text_only(question, context)
     else:
         prompt = generate_qa_prompt_using_files_and_web(question, context)
 

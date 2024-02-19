@@ -14,7 +14,7 @@ from backend.routers.files import get_file_from_r2
 import traceback
 
 class Researcher:
-    def __init__(self, query, search_type, websocket=None, files = None):
+    def __init__(self, query, search_type, websocket=None, files = None, text_only_context = ''):
         self.query = query
         self.cfg = Config()
         self.agent = None
@@ -24,6 +24,7 @@ class Researcher:
         self.context = [] 
         self.search_type = search_type
         self.files = files
+        self.text_only_context = text_only_context
 
 
     async def run_researcher_agent(self, stop_event):
@@ -96,6 +97,7 @@ class Researcher:
         # print("Running QA agent")
 
         print('STARTING QA...')
+        print('SEARCH TYPE', self.search_type)
 
         await stream_output(
             f"📘 Starting QA for query: {self.query}", websocket=self.websocket)
@@ -118,6 +120,8 @@ class Researcher:
                     if each_document not in self.context:
                         files_context.append(each_document)
                         self.context.append(each_document)
+            elif self.search_type==None:
+                self.context.append(self.text_only_context)
 
             print(files_context, 'len', len(files_context))
 

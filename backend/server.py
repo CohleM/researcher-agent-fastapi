@@ -138,6 +138,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
         token = message['allAIOptions']['Token']
         file_state = message['allAIOptions']['FileState']
         file_state = dict(file_state)
+        text_only_context = ''
 
         files = get_file_details(file_state)
         search_type = 'web'
@@ -149,6 +150,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
             search_type = 'files'
         else:
             search_type = None
+            text_only_context = message['allAIOptions']['Context'] 
 
 
 
@@ -177,7 +179,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     result = Researcher(query, search_type, websocket, files=files).run_researcher_agent(stop_event)
                     credit_usage = 10
                 elif options['AICommands'] == '2': # 2 belongs to generate QA
-                    result = Researcher(query,search_type, websocket, files=files).run_qa_agent(stop_event)
+                    result = Researcher(query,search_type, websocket, files=files, text_only_context=text_only_context).run_qa_agent(stop_event)
                     credit_usage = 5
                 elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
                     credit_usage = 2 
