@@ -184,7 +184,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     credit_usage = 10
                 elif options['AICommands'] == '2': # 2 belongs to generate QA
                     result = Researcher(query,search_type, websocket, files=files, text_only_context=text_only_context).run_qa_agent(stop_event)
-                    credit_usage = 5
+                    credit_usage = 2
                 elif options['AICommands'] == '3' and options['webSearch'] == False: # 3 belongs to Summarization 
                     credit_usage = 2 
                     result = Researcher(query,search_type, websocket).run_summarization_agent(stop_event)

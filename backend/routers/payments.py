@@ -83,7 +83,7 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
             event['data']['object']['id'], expand=['line_items'])
 
             print('This is session', session)
-            if session['payment_status'] == 'paid' and session['amount_total'] == 1400:
+            if session['payment_status'] == 'paid' and session['amount_total'] == 1000:
                 print('update the users credit')
                 crud.add_subscription_credits(session['customer_email'], 1500, db)
             elif session['payment_status'] == 'paid' and session['amount_total'] == 52:
