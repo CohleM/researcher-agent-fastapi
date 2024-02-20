@@ -6,7 +6,7 @@ from researcher.prompts.prompts import *
 from langsmith.run_helpers import traceable
 from .youtube_transcript import _parse_video_id, combine_transcript
 from youtube_transcript_api import YouTubeTranscriptApi
-
+from youtube_transcript_api._errors import TranscriptsDisabled
 
 async def get_sub_queries(query, role, cfg):
     try:
@@ -52,14 +52,22 @@ async def choose_agent(query, cfg):
 
 
 @traceable(run_type="llm", name="report")
-async def generate_report(context, question, agent_role, cfg, search_type, stop_event):
+async def generate_report(context, question, agent_role, cfg, search_type, stop_event, research_type):
     
     
 
-    if search_type == 'web':
-        prompt = generate_report_prompt(question, context)
-    else:
-        prompt = generate_report_prompt_using_files_and_web(question, context)
+
+
+    if research_type == 'report':
+        if search_type == 'web':
+            prompt = generate_report_prompt(question, context)
+        else:
+            prompt = generate_report_prompt_using_files_and_web(question, context)
+    else: # this is research_type == 'essay'
+        if search_type == 'web':
+            prompt = generate_essay_prompt(question, context)
+        else:
+            prompt = generate_essay_prompt_using_files_and_web(question, context)
 
 
     response = ""
@@ -184,18 +192,23 @@ async def stream_output(message, websocket):
         await websocket.send_json({"content": message, "type": "log"})
 
 
+# TranscriptsDisabled
+# TranscriptsDisabled(video_id)
 
 ## Summarized notes from youtube
 async def notes_from_youtube(link, cfg):
-    # Get the video id from link
-    video_id = _parse_video_id(link)
-    # Generate transcript from link
-    transcript = YouTubeTranscriptApi.get_transcript(video_id)
-    # Combine the transcript 
-    combined_transcript = combine_transcript(transcript)
     
-    #Generate
+
     try:
+
+        # Get the video id from link
+        video_id = _parse_video_id(link)
+        # Generate transcript from link
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        # Combine the transcript 
+        combined_transcript = combine_transcript(transcript)
+    #Generate
+    
         tasks = [generate_youtube_notes(transcript, cfg) for transcript in combined_transcript]
         response = await asyncio.gather(*tasks)
         combined_results = ''
@@ -203,8 +216,10 @@ async def notes_from_youtube(link, cfg):
             combined_results += i + '\n\n'
         return combined_results, combined_transcript
 
+    except TranscriptsDisabled as e:
+        return f'Sorry. This video doesnot have any transcript. Please choose a video that has transcript available.',[]
     except Exception as e:
         print(
             f"{Fore.RED} Error while generating multiple queries {e}{Style.RESET_ALL}"
         )
-        return []
+        return f'{e}',[]

@@ -27,7 +27,7 @@ class Researcher:
         self.text_only_context = text_only_context
 
 
-    async def run_researcher_agent(self, stop_event):
+    async def run_researcher_agent(self, stop_event, research_type='report'):
         """
         Run the researcher
         """
@@ -85,7 +85,7 @@ class Researcher:
         # print(f"Total chunk count {total_chunks}")
 
         await stream_output("✍🏻 Generating final Report...", websocket=self.websocket)
-        result = generate_report(self.context, self.query, self.role, self.cfg,self.search_type, stop_event)
+        result = generate_report(self.context, self.query, self.role, self.cfg,self.search_type, stop_event, research_type)
 
         async for text, finish_reason in result:
             yield text, finish_reason

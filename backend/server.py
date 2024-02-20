@@ -178,6 +178,10 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     await stream_output(f"📘 Starting research for query: {query}", websocket=websocket)
                     result = Researcher(query, search_type, websocket, files=files).run_researcher_agent(stop_event)
                     credit_usage = 10
+                elif options['AICommands'] == '3': # 3 belongs to generate essay
+                    await stream_output(f"📘 Writing essay for query: {query}", websocket=websocket)
+                    result = Researcher(query, search_type, websocket, files=files).run_researcher_agent(stop_event, research_type = 'essay')
+                    credit_usage = 10
                 elif options['AICommands'] == '2': # 2 belongs to generate QA
                     result = Researcher(query,search_type, websocket, files=files, text_only_context=text_only_context).run_qa_agent(stop_event)
                     credit_usage = 5
@@ -194,6 +198,7 @@ async def websocket_endpoint(websocket: WebSocket ) -> NoReturn:
                     print('\n\n YT notes', yt_notes)
 
                     await websocket.send_json({"content": yt_notes,"transcript": transcript, "finish_reason": "stop", 'authenticated' : 'yes', 'error' : 'none'})
+                    crud.update_credits(current_user.email, (-5), db =  next(get_db()))
                     continue 
 
                 async for text, finish_reason in result:
