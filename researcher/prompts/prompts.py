@@ -128,7 +128,18 @@ def generate_report_prompt_using_files_and_web(question, context, report_format=
         "You must write the report with markdown syntax.\n "
         f"Use an unbiased and journalistic tone. \n"
         "You MUST determine your own concrete and valid opinion based on the given information. Do NOT deter to general and meaningless conclusions.\n"
-        f"You MUST write all used source at the end of the report as references, and make sure to not add duplicated sources. There will be two types of sources: one that contains URL and another that contains filenames. For sources containing URL cite them as normal url but for the sources containing filename cite them using their filename and page number in this format (filename, p. page number), just cite them as normal text. \n"
+        f"You MUST write all used source at the end of the report as references, and make sure to not add duplicated sources. "
+        "There will be two types of sources: one that contains webpage url and another that contains filenames."
+         """You should reference each sources in this format.
+        1. For sources having url. Reference them in this format:
+            domain name (url)
+        2. For sources having filenames. Reference them in this format:
+            filename, p. page_number 
+        """
+        "For example: If the source is like this"
+           "```metadata={'url': 'https://www.consumeraffairs.com/finance/mutual-funds-vs-etfs.html'}``` then you should reference them as ConsumerAffairs. ('https://www.consumeraffairs.com/finance/mutual-funds-vs-etfs.html') "
+           "If the source is like this"
+           "```metadata={'filename': 'sec-guide-to-savings-and-investing.pdf', 'page number': 13})``` then you should reference them as  sec-guide-to-savings-and-investing.pdf, p. 13"
         f"You MUST write the report in {report_format} format.\n "
         f"You MUST Cite search results using inline notations. Only cite the most \
             relevant results that answer the query accurately. Place these citations at the end \
@@ -144,7 +155,7 @@ def generate_essay_prompt_using_files_and_web(question, context, report_format="
     Returns: str: The report prompt for the given question and research summary
     """
 
-    print('using both prompt')
+    print('using ESSAY both prompt')
     return (
         f'Information: """{context}"""\n\n'
         f"Using the above information, answer the following"
@@ -155,7 +166,17 @@ def generate_essay_prompt_using_files_and_web(question, context, report_format="
         "You must write the essay with markdown syntax.\n "
         f"Use an unbiased and journalistic tone. \n"
         "You MUST determine your own concrete and valid opinion based on the given information. Do NOT deter to general and meaningless conclusions.\n"
-        f"You MUST write all used source at the end of the essay as references, and make sure to not add duplicated sources. There will be two types of sources: one that contains URL and another that contains filenames. For sources containing URL cite them as normal url but for the sources containing filename cite them using their filename and page number in this format (filename, p. page number), just cite them as normal text. \n"
+        f"You MUST write all used source at the end of the essay as references, and make sure to not add duplicated sources. There will be two types of sources: one that contains URL and another that contains filenames. \n"
+        """You should reference each sources in this format.
+        1. For sources having url. Reference them in this format:
+            domain name (url)
+        2. For sources having filenames. Reference them in this format:
+            filename, p. page_number 
+        """
+        "For example: If the source is like this"
+           "```metadata={'url': 'https://www.consumeraffairs.com/finance/mutual-funds-vs-etfs.html'}``` then you should reference them as ConsumerAffairs. ('https://www.consumeraffairs.com/finance/mutual-funds-vs-etfs.html') "
+           "If the source is like this"
+           "```metadata={'filename': 'sec-guide-to-savings-and-investing.pdf', 'page number': 13})``` then you should reference them as  sec-guide-to-savings-and-investing.pdf, p. 13"
         f"You MUST write the essay in {report_format} format.\n "
         f"You MUST Cite search results using inline notations. Only cite the most \
             relevant results that answer the query accurately. Place these citations at the end \

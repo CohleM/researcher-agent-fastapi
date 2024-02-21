@@ -70,7 +70,8 @@ class Researcher:
                             files_context.append(each_document)
                             self.context.append(each_document)
 
-            print(files_context, 'len', len(files_context))
+            # print(files_context, 'len', len(files_context))
+            print('ALL CONTEXT,', self.context)
 
 
         except Exception as e:

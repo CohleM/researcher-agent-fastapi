@@ -13,7 +13,7 @@ class User(Base):
     # hashed_password = Column(String)
     # is_active = Column(Boolean, default=True)
     subscription = Column(String, default='free')  # Assuming subscription is a string type
-    credits = Column(Integer, default=150)  # Assuming credits is an integer type
+    credits = Column(Integer, default=50)  # Assuming credits is an integer type
     credits_expiration_date = Column(DateTime, server_default=func.now() + timedelta(days=30))
 
     drafts = relationship("Draft", back_populates="owner")
