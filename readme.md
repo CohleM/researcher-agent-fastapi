@@ -1,5 +1,24 @@
-## Environment variables are not stored in the image itself.
+### Researcher Agent
 
+The agent is capable of generating detailed, factual, and unbiased research reports, with customizable options to focus on specific resources, outlines, and insights. Drawing inspiration from recent Plan-and-Solve and RAG papers, This agent tackles challenges related to speed, consistency, and reliability, providing enhanced stability and faster performance by utilizing parallelized agent tasks instead of traditional synchronous operations.
+
+
+### Install the dependency
+
+```bash
+pip install -r requirements.txt
+```
+
+### Run the server
+
+```bash
+uvicorn backend.server:app --host 0.0.0.0 --port 8000 --reload
+```
+
+
+### Docker implmentation on VPS (ignore if using it locally)
+
+Environment variables are not stored in the image itself.
 Override the env_file specified in our docker compose usign this --env-file cli
 docker compose --env-file ./config/.env.dev up
 
